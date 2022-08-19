@@ -1,0 +1,30 @@
+version: '3'
+
+services:
+  fast_api:
+    container_name: fast_api
+    build:
+      context: fast_api
+    image: fast_api
+    networks:
+      - ugc_service
+
+  nginx:
+    container_name: nginx
+    build:
+      context: ./nginx
+    ports:
+      - "80:80"
+    depends_on:
+      - fast_api
+    networks:
+      - ugc_service
+
+
+networks:
+   ugc_service:
+     name: ugc_network
+
+
+
+
