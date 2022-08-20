@@ -42,7 +42,7 @@ class PromSettings(Settings):
 
 
 class DevSettings(Settings):
-    mongo_settings = MongoSettingsDev = MongoSettingsDev()
+    mongo_settings: MongoSettingsDev = MongoSettingsDev()
 
 
 def get_settings():
