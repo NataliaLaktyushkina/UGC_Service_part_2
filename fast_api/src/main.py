@@ -1,9 +1,11 @@
+import motor.motor_asyncio
 import uvicorn
 from fastapi import FastAPI, Depends
 from fastapi.responses import ORJSONResponse
 
 from api.v1 import bookmarks
 from core.config import settings
+from db import mongo_db
 from services.jwt_check import JWTBearer
 
 app = FastAPI(
@@ -14,6 +16,17 @@ app = FastAPI(
 )
 
 PROTECTED = [Depends(JWTBearer())]
+
+
+@app.on_event('startup')
+async def startup():
+    mongo_settings = settings.mongo_settings
+    mongo_db.mongo_db = motor.motor_asyncio.AsyncIOMotorClient(mongo_settings.MONGO_HOST, mongo_settings.MONGO_PORT)
+
+
+# @app.on_event('shutdown')
+# async def shutdown():
+#     await eventbus_kafka.db_kafka.stop()
 
 
 app.include_router(bookmarks.router, prefix='/api/v1/bookmarks', tags=['bookmarks'], dependencies=PROTECTED)

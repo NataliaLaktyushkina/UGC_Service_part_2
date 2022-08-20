@@ -13,6 +13,16 @@ class JWTSettings(BaseModel):
     JWT_ALGORITHM: str = os.getenv('JWT_ALGORITHM')
 
 
+class MongoSettingsProm(BaseModel):
+    MONGO_HOST: str = os.getenv('MONGO_HOST')
+    MONGO_PORT: str = os.getenv('MONGO_PORT')
+
+
+class MongoSettingsDev(BaseModel):
+    MONGO_HOST: str = os.getenv('MONGO_HOST_DEBUG')
+    MONGO_PORT: str = os.getenv('MONGO_PORT_DEBUG')
+
+
 class Settings(BaseSettings):
 
     PROJECT_NAME: str = os.getenv('PROJECT_NAME')
@@ -28,11 +38,12 @@ class Settings(BaseSettings):
 
 
 class PromSettings(Settings):
-    pass
+    mongo_settings: MongoSettingsProm = MongoSettingsProm()
 
 
 class DevSettings(Settings):
-    pass
+    mongo_settings = MongoSettingsDev = MongoSettingsDev()
+
 
 def get_settings():
     environment = os.getenv('ENVIRONMENT')
