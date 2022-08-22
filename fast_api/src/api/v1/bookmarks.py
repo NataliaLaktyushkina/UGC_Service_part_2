@@ -1,10 +1,9 @@
 from fastapi import APIRouter, Depends
-from models.bookmarks import BookmarkAdded
+from models.bookmarks import BookmarkAdded, BookmarksList
 from services.jwt_check import JWTBearer
 from services.bookmarks import BookmarkHandler, get_db
 
 router = APIRouter()
-
 
 
 @router.post('/', description="Add bookmark",
@@ -26,5 +25,7 @@ async def delete_bookmark():
 
 # view the bookmark list
 @router.get('/', description="Show the bookmark list")
-async def get_bookmark():
-    pass
+async def get_bookmark(
+        user_id: str = Depends(JWTBearer()),
+        service: BookmarkHandler = Depends(get_db)) -> BookmarksList:
+    return await service.get_bookmarks(user_id = user_id)

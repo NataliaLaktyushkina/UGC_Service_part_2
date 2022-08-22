@@ -1,6 +1,6 @@
 from fastapi import Depends
 from services.service import AbstractDB, MongoDB
-from models.bookmarks import BookmarkAdded
+from models.bookmarks import BookmarkAdded, BookmarksList
 from db.mongo_db import get_mongo
 
 
@@ -11,6 +11,9 @@ class BookmarkHandler:
     async def add_bookmark(self, movie_id: str, user_id: str) -> BookmarkAdded:
         bookmark_added = await self.bookmark_db.add_bookmark(movie_id, user_id)
         return BookmarkAdded(added=bookmark_added)
+
+    async def get_bookmarks(self, user_id: str) -> BookmarksList:
+        return await self.bookmark_db.get_bookmarks_list(user_id)
 
 
 def get_db(
