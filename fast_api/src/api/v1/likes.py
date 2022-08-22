@@ -1,4 +1,4 @@
-from fastapi import APIRouter, Depends
+from fastapi import APIRouter, Depends, Query
 
 from services.likes import LikesHandler, get_db
 from services.jwt_check import JWTBearer
@@ -10,11 +10,12 @@ router = APIRouter()
 @router.post('/', description="Add score",
              response_description="Movie scored")
 async def post_score(movie_id: str,
+                     score: int = Query(default=0, ge=0, le=10),
                      user_id: str = Depends(JWTBearer()),
                      service: LikesHandler = Depends(get_db)) -> LikeAdded:
     """Add like to movie"""
     return await service.add_like(movie_id=movie_id,
-                                  user_id=user_id)
+                                  user_id=user_id, score=score)
 
 
 @router.delete('/', description="Delete score",
