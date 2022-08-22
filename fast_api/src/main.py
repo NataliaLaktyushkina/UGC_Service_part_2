@@ -4,6 +4,7 @@ from fastapi import FastAPI, Depends
 from fastapi.responses import ORJSONResponse
 
 from api.v1 import bookmarks
+from api.v1 import likes
 from core.config import settings
 from db import mongo_db
 from services.jwt_check import JWTBearer
@@ -33,6 +34,7 @@ async def startup():
 
 
 app.include_router(bookmarks.router, prefix='/api/v1/bookmarks', tags=['bookmarks'], dependencies=PROTECTED)
+app.include_router(likes.router, prefix='/api/v1/likes', tags=['likes'], dependencies=PROTECTED)
 
 if __name__ == '__main__':
     uvicorn.run(

@@ -4,6 +4,7 @@ from motor.motor_asyncio import AsyncIOMotorClient
 from fastapi.responses import JSONResponse
 from typing import Union
 
+
 class AbstractDB(abc.ABC):
 
     @abc.abstractmethod
