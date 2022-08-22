@@ -37,7 +37,7 @@ class MongoDB(AbstractDB):
         if doc is None:
             result = await self.bookmarks_collection.insert_one(
                 {"user_id": user_id,
-                "movie_id": movie_id})
+                 "movie_id": [movie_id]})
 
             if result.inserted_id:
                 return True
@@ -46,8 +46,8 @@ class MongoDB(AbstractDB):
             result = await self.bookmarks_collection.update_one(
                 {"_id": doc_id},
                 {"$push":
-                    {"movie_id": movie_id}
-                })
+                     {"movie_id": movie_id}
+                 })
 
             if result.modified_count:
                 return True
