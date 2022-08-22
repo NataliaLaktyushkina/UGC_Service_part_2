@@ -6,12 +6,13 @@ from services.bookmarks import BookmarkHandler, get_db
 router = APIRouter()
 
 
-# add movie to bookmarks;
+
 @router.post('/', description="Add bookmark",
              response_description="Movie bookmarked")
 async def post_bookmark(movie_id: str,
                         user_id: str = Depends(JWTBearer()),
                         service: BookmarkHandler = Depends(get_db)) -> BookmarkAdded:
+    """Add movie to bookmarks"""
     return await service.add_bookmark(movie_id=movie_id,
                                       user_id=user_id)
 
