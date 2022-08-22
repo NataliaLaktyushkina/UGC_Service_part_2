@@ -1,7 +1,8 @@
 import abc
 from models.bookmarks import BookmarksList
 from motor.motor_asyncio import AsyncIOMotorClient
-
+from fastapi.responses import JSONResponse
+from typing import Union
 
 class AbstractDB(abc.ABC):
 
@@ -11,6 +12,10 @@ class AbstractDB(abc.ABC):
 
     @abc.abstractmethod
     def get_bookmarks_list(self, user_id: str) -> BookmarksList:
+        pass
+
+    @abc.abstractmethod
+    def delete_bookmark(self, movie_id: str, user_id: str) -> bool:
         pass
 
 
@@ -24,6 +29,21 @@ class MongoDB(AbstractDB):
         document = await self.bookmarks_collection.find_one({"user_id": user_id})
         movies = document["movie_id"]
         return movies
+
+    async def delete_bookmark(self, movie_id: str, user_id: str) -> Union[bool, JSONResponse]:
+        doc = await self.bookmarks_collection.find_one({"user_id": user_id})
+        if doc is None:
+            return JSONResponse(content="Movie id was not found")
+        else:
+            doc_id = doc["_id"]
+            result = await self.bookmarks_collection.update_one(
+                {"_id": doc_id},
+                {"$pull":
+                     {"movie_id": movie_id}
+                 })
+
+            if result.modified_count:
+                return True
 
     async def add_bookmark(self, movie_id: str, user_id: str) -> bool:
         """Add bookmark to Mongo DB"""
