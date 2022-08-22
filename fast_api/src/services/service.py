@@ -27,8 +27,8 @@ class MongoDB(AbstractDB):
         doc = await self.bookmarks_collection.find_one({"user_id": user_id})
         if doc is None:
             result = await self.bookmarks_collection.insert_one(
-                {"user_id": user_id},
-                {"movie_id": movie_id})
+                {"user_id": user_id,
+                "movie_id": movie_id})
 
             if result.inserted_id:
                 return True
