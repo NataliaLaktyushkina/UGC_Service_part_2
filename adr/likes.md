@@ -3,10 +3,5 @@
 
 DB - ugc_db
 collection - likes
-documents - {movie_id: [{user_id: score},
-                        {user_id: score}]}
-
-
-_____
 documents - {movie_id: {user_id: score}}, 
            {movie_id: {user_id: score}}
