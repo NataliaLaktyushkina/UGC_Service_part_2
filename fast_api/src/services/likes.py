@@ -1,7 +1,9 @@
 from fastapi import Depends
+from fastapi.responses import JSONResponse
 from services.service import AbstractLikeDB, MongoDBLikes
 from db.mongo_db import get_mongo
 from models.likes import LikeAdded, LikeDeleted, LikeUpdated, MovieRating
+from typing import Union
 
 
 class LikesHandler:
@@ -19,9 +21,9 @@ class LikesHandler:
         like_deleted = await self.likes_db.delete_like(movie_id, user_id)
         return LikeDeleted(deleted=like_deleted)
 
-    async def update_like(self, movie_id: str, user_id: str, score: int) -> LikeUpdated:
+    async def update_like(self, movie_id: str, user_id: str, score: int) -> Union[LikeUpdated, JSONResponse]:
         like_updated = await self.likes_db.update_like(movie_id, user_id, score)
-        return LikeUpdated(updated=like_updated)
+        return like_updated
 
 
 def get_db(

@@ -5,7 +5,7 @@ from fastapi.responses import JSONResponse
 from motor.motor_asyncio import AsyncIOMotorClient
 
 from models.bookmarks import BookmarksList
-from models.likes import MovieRating
+from models.likes import MovieRating,LikeUpdated
 
 
 class AbstractBookmarkDB(abc.ABC):
@@ -37,7 +37,7 @@ class AbstractLikeDB(abc.ABC):
         pass
 
     @abc.abstractmethod
-    def update_like(self, movie_id: str, user_id: str, score: int, **kwargs) -> Union[bool, JSONResponse]:
+    def update_like(self, movie_id: str, user_id: str, score: int, **kwargs) -> Union[LikeUpdated, JSONResponse]:
         pass
 
 
@@ -137,7 +137,7 @@ class MongoDBLikes(AbstractLikeDB):
     async def get_movie_rating(self, user_id: str) -> MovieRating:
         pass
 
-    async def update_like(self, movie_id: str, user_id: str, score: int, **kwargs) -> Union[bool, JSONResponse]:
+    async def update_like(self, movie_id: str, user_id: str, score: int, **kwargs) -> Union[LikeUpdated, JSONResponse]:
         if "document" in kwargs:
             doc = kwargs["document"]
         else:
@@ -154,8 +154,8 @@ class MongoDBLikes(AbstractLikeDB):
                  })
 
             if result.modified_count:
-                return True
-            return False
+                return LikeUpdated(updated=True)
+            return LikeUpdated(updated=False)
 
     async def delete_like(self, movie_id: str, user_id: str) -> Union[bool, JSONResponse]:
         doc = await self.likes_collection.find_one({"movie_id": movie_id,
