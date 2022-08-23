@@ -19,6 +19,7 @@ class MovieRating(BaseOrjsonModel):
     """
         This is the description of likes list response  model
     """
+    movie_id: str
     rating: float
 
 

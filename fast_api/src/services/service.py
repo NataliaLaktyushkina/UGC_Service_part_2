@@ -5,7 +5,7 @@ from fastapi.responses import JSONResponse
 from motor.motor_asyncio import AsyncIOMotorClient
 
 from models.bookmarks import BookmarksList
-from models.likes import MovieRating,LikeUpdated
+from models.likes import MovieRating, LikeUpdated
 
 
 class AbstractBookmarkDB(abc.ABC):
@@ -29,7 +29,7 @@ class AbstractLikeDB(abc.ABC):
         pass
 
     @abc.abstractmethod
-    def get_movie_rating(self, user_id: str) -> MovieRating:
+    def get_movie_rating(self, movie_id: str) -> MovieRating:
         pass
 
     @abc.abstractmethod
@@ -126,16 +126,28 @@ class MongoDBLikes(AbstractLikeDB):
                 return True
         else:
             result = await self.update_like(movie_id=movie_id,
-                                      user_id=user_id,
-                                      score=score,
-                                      document=doc
-                                      )
+                                            user_id=user_id,
+                                            score=score,
+                                            document=doc
+                                            )
 
             return result
 
+    async def get_movie_rating(self, movie_id: str) -> MovieRating:
 
-    async def get_movie_rating(self, user_id: str) -> MovieRating:
-        pass
+        pipeline = [{"$match":
+                         {"movie_id": movie_id}
+                     },
+                    {"$group":
+                        {
+                            "_id": "$movie_id",
+                            "avgscore": {"$avg": "$score"}
+                        }
+                    }
+                    ]
+        async for doc in self.likes_collection.aggregate(pipeline):
+            return MovieRating(movie_id=movie_id,
+                               rating=doc["avgscore"])
 
     async def update_like(self, movie_id: str, user_id: str, score: int, **kwargs) -> Union[LikeUpdated, JSONResponse]:
         if "document" in kwargs:

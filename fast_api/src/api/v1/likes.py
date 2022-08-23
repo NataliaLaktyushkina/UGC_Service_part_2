@@ -2,7 +2,7 @@ from fastapi import APIRouter, Depends, Query
 
 from services.likes import LikesHandler, get_db
 from services.jwt_check import JWTBearer
-from models.likes import LikeAdded, LikeDeleted, LikeUpdated
+from models.likes import LikeAdded, LikeDeleted, LikeUpdated, MovieRating
 
 router = APIRouter()
 
@@ -42,6 +42,8 @@ async def change_score(movie_id: str,
 
 @router.get('/', description="Shows movie's rating",
             response_description="Movie's rating")
-async def movies_rating():
+async def movies_rating(movie_id: str,
+                        user_id: str = Depends(JWTBearer()),
+                        service: LikesHandler = Depends(get_db)) -> MovieRating:
     """Get movie's rating"""
-    pass
+    return await service.get_movie_rating(movie_id=movie_id)
