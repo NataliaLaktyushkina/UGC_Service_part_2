@@ -19,7 +19,7 @@ class AbstractBookmarkDB(abc.ABC):
         pass
 
     @abc.abstractmethod
-    def delete_bookmark(self, movie_id: str, user_id: str) -> bool:
+    def delete_bookmark(self, movie_id: str, user_id: str) -> Union[bool, JSONResponse]:
         pass
 
 
@@ -33,11 +33,11 @@ class AbstractLikeDB(abc.ABC):
         pass
 
     @abc.abstractmethod
-    def delete_like(self, movie_id: str, user_id: str) -> bool:
+    def delete_like(self, movie_id: str, user_id: str) -> Union[bool, JSONResponse]:
         pass
 
     @abc.abstractmethod
-    def update_like(self, movie_id: str, user_id: str, score: int) -> bool:
+    def update_like(self, movie_id: str, user_id: str, score: int, **kwargs) -> Union[bool, JSONResponse]:
         pass
 
 
@@ -85,7 +85,7 @@ class MongoDBBookmark(AbstractBookmarkDB):
     async def delete_bookmark(self, movie_id: str, user_id: str) -> Union[bool, JSONResponse]:
         doc = await self.bookmarks_collection.find_one({"user_id": user_id})
         if doc is None:
-            return JSONResponse(content="Movie id was not found")
+            return JSONResponse(content="User id was not found")
         else:
             doc_id = doc["_id"]
             result = await self.bookmarks_collection.update_one(
@@ -114,33 +114,59 @@ class MongoDBLikes(AbstractLikeDB):
     async def do_insert_like(self, user_id: str,
                              movie_id: str,
                              score: int) -> bool:
-        doc = await self.likes_collection.find_one({"movie_id": movie_id})
+        doc = await self.likes_collection.find_one({"movie_id": movie_id,
+                                                    "user_id": user_id})
         if doc is None:
             result = await self.likes_collection.insert_one(
                 {"movie_id": movie_id,
-                 "scores": [{user_id: score}]})
+                 "user_id": user_id,
+                 "score": score})
 
             if result.inserted_id:
                 return True
         else:
-            doc_id = doc["_id"]
-            result = await self.likes_collection.update_one(
-                {"_id": doc_id},
-                {"$push":
-                     {"scores":
-                          {user_id: score}}
-                 })
+            result = await self.update_like(movie_id=movie_id,
+                                      user_id=user_id,
+                                      score=score,
+                                      document=doc
+                                      )
 
-            if result.modified_count:
-                return True
+            return result
 
-        return False
 
     async def get_movie_rating(self, user_id: str) -> MovieRating:
         pass
 
-    async def update_like(self, movie_id: str, user_id: str, score: int) -> bool:
-        pass
+    async def update_like(self, movie_id: str, user_id: str, score: int, **kwargs) -> Union[bool, JSONResponse]:
+        if "document" in kwargs:
+            doc = kwargs["document"]
+        else:
+            doc = await self.likes_collection.find_one({"movie_id": movie_id,
+                                                        "user_id": user_id})
+        if doc is None:
+            return JSONResponse(content="Cant find movie_id and/or user_id")
+        else:
+            doc_id = doc["_id"]
+            result = await self.likes_collection.update_one(
+                {"_id": doc_id},
+                {"$set":
+                     {"score": score}
+                 })
 
-    async def delete_like(self, movie_id: str, user_id: str) -> bool:
-        pass
+            if result.modified_count:
+                return True
+            return False
+
+    async def delete_like(self, movie_id: str, user_id: str) -> Union[bool, JSONResponse]:
+        doc = await self.likes_collection.find_one({"movie_id": movie_id,
+                                                    "user_id": user_id})
+        if doc is None:
+            return JSONResponse(content="Movie id was not found")
+        else:
+            doc_id = doc["_id"]
+            result = await self.likes_collection.delete_one(
+                {"_id": doc_id})
+
+            if result.deleted_count:
+                return True
+        return False
