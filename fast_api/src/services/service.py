@@ -1,11 +1,13 @@
 import abc
 from typing import Union
+from datetime import datetime
 
 from fastapi.responses import JSONResponse
 from motor.motor_asyncio import AsyncIOMotorClient
 
 from models.bookmarks import BookmarksList
 from models.likes import MovieRating, LikeUpdated
+from models.critique import CritiqueAdded
 
 
 class AbstractBookmarkDB(abc.ABC):
@@ -38,6 +40,13 @@ class AbstractLikeDB(abc.ABC):
 
     @abc.abstractmethod
     def update_like(self, movie_id: str, user_id: str, score: int, **kwargs) -> Union[LikeUpdated, JSONResponse]:
+        pass
+
+
+class AbstractCritiqueDB(abc.ABC):
+    @abc.abstractmethod
+    def add_critique(self, movie_id: str, user_id: str,
+                     movie_score: int, text: str) -> bool:
         pass
 
 
@@ -182,3 +191,38 @@ class MongoDBLikes(AbstractLikeDB):
             if result.deleted_count:
                 return True
         return False
+
+
+class MongoDBCritique(AbstractCritiqueDB):
+
+    def __init__(self, client: AsyncIOMotorClient):
+        self.client = client
+        self.ugc_db = self.client.ugc_database
+        self.critique_collection = self.ugc_db["critique"]
+
+    async def add_critique(self, movie_id: str, user_id: str,
+                           movie_score: int, text: str) -> bool:
+        """Add critique to Mongo DB"""
+        critique_was_added = await self.do_insert_critique(user_id, movie_id,
+                                                           movie_score, text)
+        return critique_was_added
+
+    async def do_insert_critique(self, user_id: str,
+                                 movie_id: str,
+                                 movie_score: int, text: str) -> Union[CritiqueAdded, JSONResponse]:
+        doc = await self.critique_collection.find_one({"movie_id": movie_id,
+                                                       "user_id": user_id})
+        if doc is None:
+            result = await self.critique_collection.insert_one(
+                {"movie_id": movie_id,
+                 "user_id": user_id,
+                 "movie_score": movie_score,
+                 "text": text,
+                 "timestamp": datetime.now()}
+                 )
+
+            if result.inserted_id:
+                return CritiqueAdded(added=True)
+        else:
+            return JSONResponse(content="You've already added review to current movie")
+
