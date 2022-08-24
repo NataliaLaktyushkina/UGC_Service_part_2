@@ -5,7 +5,7 @@ from fastapi.responses import JSONResponse
 
 from db.mongo_db import get_mongo
 from models.critique import CritiqueAdded, CritiqueLiked
-from services.service import AbstractCritiqueDB, MongoDBCritique
+from services.service_critique import AbstractCritiqueDB, MongoDBCritique
 
 
 class CritiqueHandler:

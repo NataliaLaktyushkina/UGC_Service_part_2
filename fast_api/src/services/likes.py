@@ -1,6 +1,6 @@
 from fastapi import Depends
 from fastapi.responses import JSONResponse
-from services.service import AbstractLikeDB, MongoDBLikes
+from services.service_likes import AbstractLikeDB, MongoDBLikes
 from db.mongo_db import get_mongo
 from models.likes import LikeAdded, LikeDeleted, LikeUpdated, MovieRating
 from typing import Union

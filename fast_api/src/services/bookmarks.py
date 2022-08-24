@@ -1,5 +1,5 @@
 from fastapi import Depends
-from services.service import AbstractBookmarkDB, MongoDBBookmark
+from services.service_bookmark import AbstractBookmarkDB, MongoDBBookmark
 from models.bookmarks import BookmarkAdded, BookmarksList, BookmarkDeleted
 from db.mongo_db import get_mongo
 

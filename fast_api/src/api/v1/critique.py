@@ -31,3 +31,6 @@ async def post_critique_like(critique_id: str,
     return await service.add_like(critique_id=critique_id,
                                   user_id=user_id,
                                   like=like)
+
+
+# - просмотр списка рецензий с возможностью гибкой сортировки.
