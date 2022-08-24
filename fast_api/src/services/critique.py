@@ -4,7 +4,7 @@ from fastapi import Depends
 from fastapi.responses import JSONResponse
 
 from db.mongo_db import get_mongo
-from models.critique import CritiqueAdded
+from models.critique import CritiqueAdded, CritiqueLiked
 from services.service import AbstractCritiqueDB, MongoDBCritique
 
 
@@ -14,8 +14,14 @@ class CritiqueHandler:
 
     async def add_critique(self, movie_id: str, user_id: str,
                            movie_score: int, text: str) -> Union[CritiqueAdded, JSONResponse]:
-        like_added = await self.critique_db.add_critique(movie_id, user_id,
-                                                         movie_score,text)
+        critique_added = await self.critique_db.add_critique(movie_id, user_id,
+                                                             movie_score, text)
+        return critique_added
+
+    async def add_like(self, critique_id: str,
+                       user_id: str, like: bool) -> Union[CritiqueLiked, JSONResponse]:
+        like_added = await self.critique_db.add_critique_like(critique_id, user_id,
+                                                         like)
         return like_added
 
 

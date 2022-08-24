@@ -1,6 +1,6 @@
 from fastapi import APIRouter, Depends, Query
 
-from models.critique import CritiqueAdded
+from models.critique import CritiqueAdded, CritiqueLiked
 from services.critique import CritiqueHandler, get_db
 from services.jwt_check import JWTBearer
 
@@ -19,3 +19,15 @@ async def post_critique(movie_id: str,
                                       user_id=user_id,
                                       movie_score=movie_score,
                                       text=text)
+
+
+@router.post('/like', description="Add critique like",
+             response_description="Like added")
+async def post_critique_like(critique_id: str,
+                             like: bool,
+                             user_id: str = Depends(JWTBearer()),
+                             service: CritiqueHandler = Depends(get_db)) -> CritiqueLiked:
+    """Add critique to movie"""
+    return await service.add_like(critique_id=critique_id,
+                                  user_id=user_id,
+                                  like=like)
