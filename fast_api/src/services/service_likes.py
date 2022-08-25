@@ -24,7 +24,6 @@ class AbstractLikeDB(abc.ABC):
     def update_like(self, movie_id: str, user_id: str, score: int, **kwargs) -> Union[LikeUpdated, JSONResponse]:
         pass
 
-
 class MongoDBLikes(AbstractLikeDB):
 
     def __init__(self, client: AsyncIOMotorClient):

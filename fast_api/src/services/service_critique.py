@@ -1,11 +1,11 @@
 import abc
 from datetime import datetime
-from typing import Union
+from typing import Union, List
 
 from fastapi.responses import JSONResponse
 from motor.motor_asyncio import AsyncIOMotorClient
 
-from models.critique import CritiqueAdded, CritiqueLiked, CritiqueList
+from models.critique import CritiqueAdded, CritiqueLiked, Critique
 
 
 class AbstractCritiqueDB(abc.ABC):
@@ -16,11 +16,11 @@ class AbstractCritiqueDB(abc.ABC):
 
     @abc.abstractmethod
     def add_critique_like(self, critique_id: str, user_id: str,
-                          like: bool) -> bool:
+                          like: bool) -> CritiqueLiked:
         pass
 
     @abc.abstractmethod
-    def get_critique_list(self, movie_id: str) -> CritiqueList:
+    def get_critique_list(self, movie_id: str) -> Critique:
         pass
 
 
@@ -59,14 +59,14 @@ class MongoDBCritique(AbstractCritiqueDB):
             return JSONResponse(content="You've already added review to current movie")
 
     async def add_critique_like(self, critique_id: str, user_id: str,
-                                like: bool) -> bool:
+                                like: bool) -> CritiqueLiked:
         """Add like/dislike to critique in Mongo DB"""
         critique_liked = await self.insert_critique_like(critique_id,
                                                          user_id, like)
         return critique_liked
 
     async def insert_critique_like(self, critique_id: str,
-                                   user_id: str, like: bool) -> Union[JSONResponse, CritiqueLiked]:
+                                   user_id: str, like: bool) -> CritiqueLiked:
         doc = await self.critique_likes_collection.find_one({"critique_id": critique_id,
                                                              "user_id": user_id})
         if doc is None:
@@ -105,5 +105,13 @@ class MongoDBCritique(AbstractCritiqueDB):
                 return CritiqueLiked(liked=True)
             return CritiqueLiked(liked=False)
 
-    async def get_critique_list(self, movie_id: str) -> CritiqueList:
-        pass
+    async def get_critique_list(self, movie_id: str) -> List[Critique]:
+        docs = self.critique_collection.find({"movie_id": movie_id})
+        critique_list = []
+        async for doc in docs:
+            critique_list.append({"critique_id": doc["_id"],
+                                  "movie_score": doc["movie_score"],
+                                  "critique_rating": 5})
+        return [Critique(critique_id=str(cl["critique_id"]),
+                         movie_score=cl["movie_score"],
+                         critique_rating=cl["critique_rating"]) for cl in critique_list]

@@ -1,6 +1,8 @@
+from typing import List
+
 from fastapi import APIRouter, Depends, Query
 
-from models.critique import CritiqueAdded, CritiqueLiked
+from models.critique import CritiqueAdded, CritiqueLiked, Critique
 from services.critique import CritiqueHandler, get_db
 from services.jwt_check import JWTBearer
 
@@ -33,4 +35,10 @@ async def post_critique_like(critique_id: str,
                                   like=like)
 
 
-# - просмотр списка рецензий с возможностью гибкой сортировки.
+@router.get('/', description="Get movie's critique list",
+            response_description="Provided movie's critique list")
+async def get_critique_list(movie_id: str,
+                            user_id: str = Depends(JWTBearer()),
+                            service: CritiqueHandler = Depends(get_db)) -> List[Critique]:
+    """Get movie's critique list with sorting"""
+    return await service.get_list(movie_id=movie_id)

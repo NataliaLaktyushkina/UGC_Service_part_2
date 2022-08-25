@@ -1,5 +1,4 @@
 from .json_config import BaseOrjsonModel
-from typing import Dict
 
 
 class CritiqueAdded(BaseOrjsonModel):
@@ -17,14 +16,10 @@ class CritiqueLiked(BaseOrjsonModel):
 
 
 class Critique(BaseOrjsonModel):
-    critique_id: str
-    movie_score: int
-
-
-class CritiqueList(BaseOrjsonModel):
     """
         This is the description of get critique's list get response  model
     """
-    movie_id: str
-    critique: Critique
+    critique_id: str
+    movie_score: int
+    critique_rating: float
 

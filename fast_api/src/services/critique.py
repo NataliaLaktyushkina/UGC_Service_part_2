@@ -1,10 +1,10 @@
-from typing import Union
+from typing import Union, List
 
 from fastapi import Depends
 from fastapi.responses import JSONResponse
 
 from db.mongo_db import get_mongo
-from models.critique import CritiqueAdded, CritiqueLiked
+from models.critique import CritiqueAdded, CritiqueLiked, Critique
 from services.service_critique import AbstractCritiqueDB, MongoDBCritique
 
 
@@ -21,8 +21,11 @@ class CritiqueHandler:
     async def add_like(self, critique_id: str,
                        user_id: str, like: bool) -> Union[CritiqueLiked, JSONResponse]:
         like_added = await self.critique_db.add_critique_like(critique_id, user_id,
-                                                         like)
+                                                              like)
         return like_added
+
+    async def get_list(self, movie_id: str) -> List[Critique]:
+        return await self.critique_db.get_critique_list(movie_id=movie_id)
 
 
 def get_db(
