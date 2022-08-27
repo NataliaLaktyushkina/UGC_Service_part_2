@@ -1,3 +1,6 @@
+import datetime
+from enum import Enum
+
 from .json_config import BaseOrjsonModel
 
 
@@ -22,4 +25,9 @@ class Critique(BaseOrjsonModel):
     critique_id: str
     movie_score: int
     critique_rating: float
+    creation_date: datetime.datetime
 
+
+class DropDownSorting(str, Enum):
+    by_date = "Date desc"
+    by_rating = "Rating desc"

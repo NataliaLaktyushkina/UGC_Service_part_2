@@ -5,7 +5,7 @@ from typing import Union, List
 from fastapi.responses import JSONResponse
 from motor.motor_asyncio import AsyncIOMotorClient
 
-from models.critique import CritiqueAdded, CritiqueLiked, Critique
+from models.critique import CritiqueAdded, CritiqueLiked, Critique, DropDownSorting
 
 
 class AbstractCritiqueDB(abc.ABC):
@@ -20,7 +20,7 @@ class AbstractCritiqueDB(abc.ABC):
         pass
 
     @abc.abstractmethod
-    def get_critique_list(self, movie_id: str) -> Critique:
+    def get_critique_list(self, movie_id: str, sorting_type: str) -> Critique:
         pass
 
 
@@ -105,18 +105,24 @@ class MongoDBCritique(AbstractCritiqueDB):
                 return CritiqueLiked(liked=True)
             return CritiqueLiked(liked=False)
 
-    async def get_critique_list(self, movie_id: str) -> List[Critique]:
+    async def get_critique_list(self, movie_id: str,
+                                sorting_type: DropDownSorting) -> List[Critique]:
         critique_list = []
         pipeline = [
             {"$match":
                  {"movie_id": movie_id}
              }]
+        if sorting_type == DropDownSorting.by_date:
+            pipeline.append(
+                {"$sort":
+                     {"timestamp": -1}
+                 })
 
         async for doc in self.critique_collection.aggregate(pipeline):
             rating_pipeline = [{"$match":
                                     {"critique_id": str(doc["_id"])}
                                 }
-                                ,
+                ,
                                {"$group":
                                    {
                                        "_id": "$critique_id",
@@ -124,10 +130,16 @@ class MongoDBCritique(AbstractCritiqueDB):
                                    }
                                }
                                ]
+
             async for res in self.critique_likes_collection.aggregate(rating_pipeline):
                 critique_list.append({"critique_id": doc["_id"],
                                       "movie_score": doc["movie_score"],
-                                      "critique_rating": res["rating"]})
+                                      "critique_rating": res["rating"],
+                                      "creation_date": doc["timestamp"]})
+        if sorting_type == DropDownSorting.by_rating:
+            sorted_critique = sorted(critique_list,
+                                     key=lambda r: r["critique_rating"], reverse=True)
         return [Critique(critique_id=str(cl["critique_id"]),
                          movie_score=cl["movie_score"],
-                         critique_rating=cl["critique_rating"]) for cl in critique_list]
+                         critique_rating=cl["critique_rating"],
+                         creation_date=cl["creation_date"]) for cl in sorted_critique]

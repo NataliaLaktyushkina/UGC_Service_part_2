@@ -1,8 +1,8 @@
 from typing import List
 
-from fastapi import APIRouter, Depends, Query
+from fastapi import APIRouter, Depends, Query, Form
 
-from models.critique import CritiqueAdded, CritiqueLiked, Critique
+from models.critique import CritiqueAdded, CritiqueLiked, Critique, DropDownSorting
 from services.critique import CritiqueHandler, get_db
 from services.jwt_check import JWTBearer
 
@@ -39,6 +39,8 @@ async def post_critique_like(critique_id: str,
             response_description="Provided movie's critique list")
 async def get_critique_list(movie_id: str,
                             user_id: str = Depends(JWTBearer()),
-                            service: CritiqueHandler = Depends(get_db)) -> List[Critique]:
+                            service: CritiqueHandler = Depends(get_db),
+                            sorting: DropDownSorting = Query(DropDownSorting.by_date)) -> List[Critique]:
     """Get movie's critique list with sorting"""
-    return await service.get_list(movie_id=movie_id)
+    return await service.get_list(movie_id=movie_id,
+                                  sorting=sorting)

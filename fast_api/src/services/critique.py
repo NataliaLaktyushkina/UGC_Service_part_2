@@ -4,7 +4,7 @@ from fastapi import Depends
 from fastapi.responses import JSONResponse
 
 from db.mongo_db import get_mongo
-from models.critique import CritiqueAdded, CritiqueLiked, Critique
+from models.critique import CritiqueAdded, CritiqueLiked, Critique, DropDownSorting
 from services.service_critique import AbstractCritiqueDB, MongoDBCritique
 
 
@@ -24,8 +24,9 @@ class CritiqueHandler:
                                                               like)
         return like_added
 
-    async def get_list(self, movie_id: str) -> List[Critique]:
-        return await self.critique_db.get_critique_list(movie_id=movie_id)
+    async def get_list(self, movie_id: str, sorting: DropDownSorting) -> List[Critique]:
+        return await self.critique_db.get_critique_list(movie_id=movie_id,
+                                                        sorting_type=sorting)
 
 
 def get_db(
