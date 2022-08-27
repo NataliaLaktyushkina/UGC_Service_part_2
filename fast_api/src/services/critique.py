@@ -19,7 +19,7 @@ class CritiqueHandler:
         return critique_added
 
     async def add_like(self, critique_id: str,
-                       user_id: str, like: bool) -> Union[CritiqueLiked, JSONResponse]:
+                       user_id: str, like: int) -> Union[CritiqueLiked, JSONResponse]:
         like_added = await self.critique_db.add_critique_like(critique_id, user_id,
                                                               like)
         return like_added
