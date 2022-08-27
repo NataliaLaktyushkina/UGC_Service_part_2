@@ -26,7 +26,7 @@ async def post_critique(movie_id: str,
 @router.post('/like', description="Add critique like",
              response_description="Like added")
 async def post_critique_like(critique_id: str,
-                             like: bool,
+                             like: int = Query([-1, 1]),
                              user_id: str = Depends(JWTBearer()),
                              service: CritiqueHandler = Depends(get_db)) -> CritiqueLiked:
     """Add critique to movie"""
