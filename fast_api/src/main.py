@@ -17,7 +17,7 @@ app = FastAPI(
     default_response_class=ORJSONResponse,
 )
 
-PROTECTED = [Depends(JWTBearer())]
+PROTECTED = [Depends(JWTBearer)]
 
 
 @app.on_event('startup')
