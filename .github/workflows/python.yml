@@ -30,11 +30,7 @@ jobs:
     - name: Lint with styleguide
       run: |
         # stop the build if there are Python syntax errors or undefined names
-        flake8 . --format=html --htmldir=flake-report --count
-        --select= D2, D4, E302,E9,
-                 F63,F7,F82,
-                 I, S,Q,
-                 WPS
-        --show-source --statistics
+        flake8 . --config=flake8.cfg
+
         # exit-zero treats all errors as warnings. The GitHub editor is 127 chars wide
         flake8 . --count --exit-zero --max-complexity=10 --max-line-length=127 --statistics
