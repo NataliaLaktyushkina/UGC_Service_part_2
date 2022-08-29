@@ -8,10 +8,9 @@
 
 DB - ugc_db
 collection - likes
-documents - {movie_id, user_id, score}, 
+documents - {movie_id, user_id, score},
            {movie_id, user_id, score}
 
 **Notes:**
 
 Оценка более точно позволит рассчитать рейтинг фильма, чем лайк/дизлак
-

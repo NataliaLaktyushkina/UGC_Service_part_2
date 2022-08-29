@@ -32,4 +32,3 @@ class JWTBearer(HTTPBearer):
         except:
             return False
         return expire_time > current_time
-
