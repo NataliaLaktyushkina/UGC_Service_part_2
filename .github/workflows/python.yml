@@ -8,12 +8,14 @@ on:
   workflow_dispatch:
 
 jobs:
-  build:
-
+  example_matrix:
     runs-on: ubuntu-latest
     strategy:
       matrix:
         version: [3.7, 3.8, 3.9]
+
+  build:
+
     steps:
     - uses: actions/checkout@v2
 
