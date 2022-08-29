@@ -1,6 +1,6 @@
 from typing import List
 
-from fastapi import APIRouter, Depends, Query, Form
+from fastapi import APIRouter, Depends, Query
 
 from models.critique import CritiqueAdded, CritiqueLiked, Critique, DropDownSorting
 from services.critique import CritiqueHandler, get_db
