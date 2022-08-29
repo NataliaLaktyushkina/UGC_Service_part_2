@@ -11,7 +11,7 @@ from models.critique import CritiqueAdded, CritiqueLiked, Critique, DropDownSort
 class AbstractCritiqueDB(abc.ABC):
     @abc.abstractmethod
     def add_critique(self, movie_id: str, user_id: str,
-                     movie_score: int, text: str) -> bool:
+                     movie_score: int, text: str) -> Union[CritiqueAdded, JSONResponse]:
         pass
 
     @abc.abstractmethod
