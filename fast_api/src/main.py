@@ -21,7 +21,7 @@ PROTECTED = [Depends(JWTBearer)]  # noqa: WPS407
 
 
 @app.on_event('startup')
-async def startup():
+async def startup() -> None:
     """Start up settings - connect to Mongo DB"""
     mongo_settings = settings.mongo_settings
     mongo_db.mongo_db = motor_asyncio.AsyncIOMotorClient(

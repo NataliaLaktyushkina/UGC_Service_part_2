@@ -108,4 +108,3 @@ class MongoDBLikes(AbstractLikeDB):
             if result.deleted_count:
                 return True
         return False
-

@@ -15,4 +15,3 @@ def jwt_decoder(token: str) -> Union[dict, int]:
     except jwt.ExpiredSignatureError:
         # Signature has expired
         return HTTPStatus.UNAUTHORIZED
-

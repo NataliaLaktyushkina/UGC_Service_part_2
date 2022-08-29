@@ -13,7 +13,7 @@ document = {critique_id, user_id, like/dislike}
 
 Sorting:
 - most popular
-- the last 
+- the last
 - by movie score in review
 
 

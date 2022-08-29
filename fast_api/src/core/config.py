@@ -1,4 +1,5 @@
 import os
+from typing import Optional, Union
 
 from dotenv import load_dotenv
 from pydantic import BaseSettings, BaseModel
@@ -11,41 +12,42 @@ if not IS_DOCKER:
 
 class JWTSettings(BaseModel):
     """Setting for JWT Token"""
-    JWT_SECRET_KEY: str = os.getenv('JWT_SECRET_KEY')  # noqa: WPS115
-    JWT_ALGORITHM: str = os.getenv('JWT_ALGORITHM')  # noqa: WPS115
+
+    JWT_SECRET_KEY: Optional[str] = os.getenv('JWT_SECRET_KEY')  # noqa: WPS115
+    JWT_ALGORITHM: Optional[str] = os.getenv('JWT_ALGORITHM')  # noqa: WPS115
 
 
 class MongoUser(BaseModel):
     """Mongo DB username and password"""
 
-    MONGO_USER: str = os.getenv('MONGO_USER')  # noqa: WPS115
-    MONGO_PASS: str = os.getenv('MONGO_PASS')  # noqa: WPS115
+    MONGO_USER: Optional[str] = os.getenv('MONGO_USER')  # noqa: WPS115
+    MONGO_PASS: Optional[str] = os.getenv('MONGO_PASS')  # noqa: WPS115
 
 
 class MongoSettingsProm(MongoUser):
     """Mongo DB host and port for production"""
 
-    MONGO_HOST: str = os.getenv('MONGO_HOST')  # noqa: WPS115
-    MONGO_PORT: str = os.getenv('MONGO_PORT')  # noqa: WPS115
+    MONGO_HOST: Optional[str] = os.getenv('MONGO_HOST')  # noqa: WPS115
+    MONGO_PORT: Optional[str] = os.getenv('MONGO_PORT')  # noqa: WPS115
 
 
 class MongoSettingsDev(MongoUser):
     """Mongo DB host and port for development"""
 
-    MONGO_HOST: str = os.getenv('MONGO_HOST_DEBUG')  # noqa: WPS115
-    MONGO_PORT: str = os.getenv('MONGO_PORT_DEBUG')  # noqa: WPS115
+    MONGO_HOST: Optional[str] = os.getenv('MONGO_HOST_DEBUG')  # noqa: WPS115
+    MONGO_PORT: Optional[str] = os.getenv('MONGO_PORT_DEBUG')  # noqa: WPS115
 
 
 class FastAPISettings(BaseModel):
-    FAST_API_HOST: str = os.getenv('FAST_API_HOST')  # noqa: WPS115
-    FAST_API_PORT: str = os.getenv('FAST_API_PORT')  # noqa: WPS115
+    FAST_API_HOST: Optional[str] = os.getenv('FAST_API_HOST')  # noqa: WPS115
+    FAST_API_PORT: Optional[str] = os.getenv('FAST_API_PORT')  # noqa: WPS115
 
 
 class Settings(BaseSettings):
 
-    PROJECT_NAME: str = os.getenv('PROJECT_NAME')  # noqa: WPS115
+    PROJECT_NAME: Optional[str] = os.getenv('PROJECT_NAME')  # noqa: WPS115
 
-    TOPIC: str = os.getenv('TOPIC')  # noqa: WPS115
+    TOPIC: Optional[str] = os.getenv('TOPIC')  # noqa: WPS115
 
     jwt_settings: JWTSettings = JWTSettings()
 
@@ -65,7 +67,7 @@ class DevSettings(Settings):
     mongo_settings: MongoSettingsDev = MongoSettingsDev()
 
 
-def get_settings():
+def get_settings() -> Union[PromSettings, DevSettings]:
     environment = os.getenv('ENVIRONMENT')
     if environment == 'prom':
         return PromSettings()

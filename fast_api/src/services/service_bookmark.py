@@ -77,4 +77,3 @@ class MongoDBBookmark(AbstractBookmarkDB):
 
             if result.modified_count:
                 return True
-

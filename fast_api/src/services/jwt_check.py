@@ -29,7 +29,6 @@ class JWTBearer(HTTPBearer):
             payload: dict = jwt_decoder(jwtoken)
             expire_time: int = payload.get("exp")
             current_time: int = int(datetime.now().timestamp())
-        except:
+        except BaseException:
             return False
         return expire_time > current_time
-

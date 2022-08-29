@@ -24,7 +24,3 @@ services:
 networks:
    ugc_service:
      name: ugc_network
-
-
-
-
