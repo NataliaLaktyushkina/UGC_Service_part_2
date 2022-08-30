@@ -49,7 +49,7 @@ jobs:
           message: |
             Successfull check:
             Workflow: ${{ github.workflow }}.
-            Pull_request to main by ${{ github.actor }}.
-            Pull request message: ${{ github.event.commits[0].message }}
+            Actor: ${{ github.actor }}.
+            Message: ${{ github.event.commits[0].message }}
 
             Repository: ${{ github.repository }}
