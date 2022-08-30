@@ -5,6 +5,7 @@ services:
         environment:
           # Так как сейчас вы хотите запустить logstash без Elasticsearch, необходимо отключить встроенный мониторинг, отправляющий данные в ES
           XPACK_MONITORING_ENABLED: "false"
+          ES_HOST: "elasticsearch:9200"
         ports:
           - "5044:5044/udp"
         volumes:
@@ -12,6 +13,8 @@ services:
           - ./deploy/logstash.conf:/config/logstash.conf:ro
         # Запускаем с указанием конфигурационного файла
         command: logstash -f /config/logstash.conf
+        depends_on:
+          - elasticsearch
 
     elasticsearch:
       image: elasticsearch:7.17.6
