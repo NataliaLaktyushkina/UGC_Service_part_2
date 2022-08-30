@@ -48,6 +48,7 @@ jobs:
           token: ${{ secrets.TG_BOT_KEY }}
           message: |
             Successfull check:
+            Python v ${{matrix.version}}
             Workflow: ${{ github.workflow }}.
             Actor: ${{ github.actor }}.
             Message: ${{ github.event.commits[0].message }}
