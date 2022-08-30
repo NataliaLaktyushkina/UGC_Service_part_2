@@ -48,8 +48,9 @@ jobs:
           token: ${{ secrets.TG_BOT_KEY }}
           message: |
             Successfull check:
+            Python v ${{matrix.version}}
             Workflow: ${{ github.workflow }}.
-            Pull_request to main by ${{ github.actor }}.
-            Pull request message: ${{ github.event.commits[0].message }}
+            Actor: ${{ github.actor }}.
+            Message: ${{ github.event.commits[0].message }}
 
             Repository: ${{ github.repository }}
