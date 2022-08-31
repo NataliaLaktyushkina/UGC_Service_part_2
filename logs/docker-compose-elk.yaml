@@ -2,6 +2,7 @@ version: '3'
 services:
     logstash:
         image: logstash:7.10.1
+        container_name: logstash
         environment:
           # Так как сейчас вы хотите запустить logstash без Elasticsearch, необходимо отключить встроенный мониторинг, отправляющий данные в ES
           XPACK_MONITORING_ENABLED: "false"
@@ -15,6 +16,8 @@ services:
         command: logstash -f /config/logstash.conf
         depends_on:
           - elasticsearch
+        networks:
+          - elk
 
     elasticsearch:
       image: elasticsearch:7.17.6
@@ -25,6 +28,8 @@ services:
         - 9200:9200
       volumes:
         - /tmp/esdata:/tmp/elasticsearch/data
+      networks:
+        - elk
 
     kibana:
         image: kibana:7.17.6
@@ -32,3 +37,10 @@ services:
           - "5601:5601"
         depends_on:
           - elasticsearch
+        networks:
+          - elk
+
+
+networks:
+   elk:
+     name: elk
