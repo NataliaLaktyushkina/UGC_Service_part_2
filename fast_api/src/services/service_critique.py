@@ -121,8 +121,7 @@ class MongoDBCritique(AbstractCritiqueDB):
         async for doc in self.critique_collection.aggregate(pipeline):
             rating_pipeline = [{"$match":
                                     {"critique_id": str(doc["_id"])},
-                                }
-                ,
+                                },
                                {"$group":
                                    {
                                        "_id": "$critique_id",

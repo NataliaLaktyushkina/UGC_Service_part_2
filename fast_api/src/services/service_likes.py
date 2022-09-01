@@ -24,6 +24,7 @@ class AbstractLikeDB(abc.ABC):
     def update_like(self, movie_id: str, user_id: str, score: int, **kwargs) -> Union[LikeUpdated, JSONResponse]:
         pass
 
+
 class MongoDBLikes(AbstractLikeDB):
 
     def __init__(self, client: AsyncIOMotorClient):
@@ -62,7 +63,7 @@ class MongoDBLikes(AbstractLikeDB):
     async def get_movie_rating(self, movie_id: str) -> MovieRating:
 
         pipeline = [{"$match":
-                         {"movie_id": movie_id},
+                         {"movie_id": movie_id},  # noqa E127
                      },
                     {"$group":
                         {
@@ -88,7 +89,7 @@ class MongoDBLikes(AbstractLikeDB):
             result = await self.likes_collection.update_one(
                 {"_id": doc_id},
                 {"$set":
-                     {"score": score},
+                    {"score": score},
                  })
 
             if result.modified_count:
