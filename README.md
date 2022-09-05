@@ -2,8 +2,12 @@
 
 [Репозиторий ugc_sprint_2 (проектная работа 9-го спринта)](https://github.com/NataliaLaktyushkina/ugc_sprint_2)
 
+### Git Actions:
+- [Push and pull request](.github/workflows/python.yml)
+- [pre-commit](.pre-commit-config.yaml)
+
 ###  API:
-http://127.0.0.1/api/openapi#/ 
+http://127.0.0.1/api/openapi#/
 
 ### Закладки: ###
 Endpoints:

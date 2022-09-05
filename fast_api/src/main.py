@@ -23,11 +23,14 @@ PROTECTED = [Depends(JWTBearer())]
 @app.on_event('startup')
 async def startup():
     mongo_settings = settings.mongo_settings
-    mongo_db.mongo_db = motor.motor_asyncio.AsyncIOMotorClient(mongo_settings.MONGO_HOST,
-                                                               int(mongo_settings.MONGO_PORT),
-                                                               username="rootuser",
-                                                               password="rootpass")
-
+    mongo_db.mongo_db = motor.motor_asyncio.AsyncIOMotorClient(
+        host=mongo_settings.MONGO_HOST,
+        port=int(mongo_settings.MONGO_PORT),
+        username=mongo_settings.MONGO_USER,
+        password=mongo_settings.MONGO_PASS
+        # username='rootuser',
+        # password='rootpass'
+    )
 
 # @app.on_event('shutdown')
 # async def shutdown():

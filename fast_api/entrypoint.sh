@@ -9,4 +9,3 @@ done
 echo "Mongo DB started"
 
 gunicorn -k uvicorn.workers.UvicornWorker -b 0.0.0.0:8101 main:app
-
