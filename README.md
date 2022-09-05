@@ -2,6 +2,10 @@
 
 [Репозиторий ugc_sprint_2 (проектная работа 9-го спринта)](https://github.com/NataliaLaktyushkina/ugc_sprint_2)
 
+### Git Actions:
+- [Push and pull request](.github/workflows/python.yml)
+- [pre-commit](.pre-commit-config.yaml)
+
 ###  API:
 http://127.0.0.1/api/openapi#/
 
@@ -19,7 +23,7 @@ Endpoints:
 - просмотр средней пользовательской оценки фильма;
 - добавление, удаление или изменение оценки.
 
-####  Рецензии:
+###  Рецензии: ###
 Endpoints:
 - добавление рецензии к фильму:
 - добавление лайка или дизлайка к рецензии:
@@ -30,3 +34,7 @@ Endpoints:
 - просмотр списка рецензий с возможностью гибкой сортировки:
 
 Типы сортировки - по оценке, по дате добавления рецензии
+
+
+### Логирование: ###
+[Sentry](https://sentry.io/organizations/natalia-07/issues/)
