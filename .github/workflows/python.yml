@@ -9,16 +9,17 @@ on:
 
 jobs:
   build:
-
     runs-on: ubuntu-latest
-
+    strategy:
+      matrix:
+        version: [3.7, 3.8, 3.9]
     steps:
     - uses: actions/checkout@v2
 
-    - name: Set up Python 3.9
+    - name: Set up Python ${{matrix.version}}
       uses: actions/setup-python@v2
       with:
-        python-version: 3.9
+        python-version: ${{matrix.version}}
 
     - name: Install dependencies
       run: |
@@ -30,6 +31,26 @@ jobs:
     - name: Lint with styleguide
       run: |
         # stop the build if there are Python syntax errors or undefined names
-        flake8 . --format=html --htmldir=flake-report --count --select=E9,F63,F7,F82 --show-source --statistics
+        flake8 . --config=flake8.cfg
+
         # exit-zero treats all errors as warnings. The GitHub editor is 127 chars wide
         flake8 . --count --exit-zero --max-complexity=10 --max-line-length=127 --statistics
+
+#   - name: Mypy
+#       run: |
+#         # stop the build if there are Python syntax errors or undefined types
+#         mypy .
+
+    - name: send telegram message
+      uses: appleboy/telegram-action@master
+      with:
+          to: ${{ secrets.TG_CHAT_ID }}
+          token: ${{ secrets.TG_BOT_KEY }}
+          message: |
+            Successfull check:
+            Python v ${{matrix.version}}
+            Workflow: ${{ github.workflow }}.
+            Actor: ${{ github.actor }}.
+            Message: ${{ github.event.commits[0].message }}
+
+            Repository: ${{ github.repository }}

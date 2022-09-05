@@ -3,6 +3,9 @@ from services.service_bookmark import AbstractBookmarkDB, MongoDBBookmark
 from models.bookmarks import BookmarkAdded, BookmarksList, BookmarkDeleted
 from db.mongo_db import get_mongo
 
+from fastapi.responses import JSONResponse
+from typing import Union
+
 
 class BookmarkHandler:
     def __init__(self, bookmark_db: AbstractBookmarkDB):
@@ -12,7 +15,7 @@ class BookmarkHandler:
         bookmark_added = await self.bookmark_db.add_bookmark(movie_id, user_id)
         return BookmarkAdded(added=bookmark_added)
 
-    async def get_bookmarks(self, user_id: str) -> BookmarksList:
+    async def get_bookmarks(self, user_id: str) -> Union[BookmarksList, JSONResponse]:
         return await self.bookmark_db.get_bookmarks_list(user_id)
 
     async def delete_bookmark(self, movie_id: str, user_id: str) -> BookmarkDeleted:

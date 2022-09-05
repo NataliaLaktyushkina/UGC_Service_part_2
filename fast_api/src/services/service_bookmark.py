@@ -14,7 +14,7 @@ class AbstractBookmarkDB(abc.ABC):
         pass
 
     @abc.abstractmethod
-    def get_bookmarks_list(self, user_id: str) -> BookmarksList:
+    def get_bookmarks_list(self, user_id: str) -> Union[BookmarksList, JSONResponse]:
         pass
 
     @abc.abstractmethod
@@ -58,10 +58,12 @@ class MongoDBBookmark(AbstractBookmarkDB):
 
         return False
 
-    async def get_bookmarks_list(self, user_id: str) -> BookmarksList:
+    async def get_bookmarks_list(self, user_id: str) -> Union[BookmarksList, JSONResponse]:
         document = await self.bookmarks_collection.find_one({"user_id": user_id})
-        movies = document["movie_id"]
-        return movies
+        if document:
+            movies = document["movie_id"]
+            return movies
+        return  JSONResponse(content="User has no bookmarks")
 
     async def delete_bookmark(self, movie_id: str, user_id: str) -> Union[bool, JSONResponse]:
         doc = await self.bookmarks_collection.find_one({"user_id": user_id})
@@ -77,4 +79,3 @@ class MongoDBBookmark(AbstractBookmarkDB):
 
             if result.modified_count:
                 return True
-
