@@ -12,12 +12,13 @@ services:
         volumes:
           # Монтируем файл с конфигурацией logstash
           - ./deploy/logstash.conf:/config/logstash.conf:ro
+          - /tmp/logs/nginx/:/var/log/nginx/:ro
         # Запускаем с указанием конфигурационного файла
         command: logstash -f /config/logstash.conf
         depends_on:
           - elasticsearch
-        networks:
-          - elk
+#        networks:
+#          - elk
 
     elasticsearch:
       image: elasticsearch:7.17.6
@@ -28,8 +29,8 @@ services:
         - 9200:9200
       volumes:
         - /tmp/esdata:/tmp/elasticsearch/data
-      networks:
-        - elk
+#      networks:
+#        - elk
 
     kibana:
         image: kibana:7.17.6
@@ -37,10 +38,10 @@ services:
           - "5601:5601"
         depends_on:
           - elasticsearch
-        networks:
-          - elk
+#        networks:
+#          - elk
 
 
 networks:
-   elk:
-     name: elk
+    default:
+     name: ugc_network
