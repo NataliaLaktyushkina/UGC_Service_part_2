@@ -3,3 +3,5 @@ docker-compose.override.yml
 notes.md
 MongoDB/data
 flake-report
+logs/src_student
+/logs/src_student/

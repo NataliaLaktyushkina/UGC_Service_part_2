@@ -1,3 +1,4 @@
+import sentry_sdk
 import uvicorn
 from fastapi import FastAPI, Depends
 from fastapi.responses import ORJSONResponse
@@ -9,6 +10,15 @@ from api.v1 import likes
 from core.config import settings
 from db import mongo_db
 from services.jwt_check import JWTBearer
+
+sentry_sdk.init(
+    dsn="https://bdac46e09f9444d1a209a8e570f92255@o1386750.ingest.sentry.io/6707192",
+
+    # Set traces_sample_rate to 1.0 to capture 100%
+    # of transactions for performance monitoring.
+    # We recommend adjusting this value in production,
+    traces_sample_rate=1.0,
+)
 
 app = FastAPI(
     title=settings.PROJECT_NAME,
@@ -48,9 +58,8 @@ app.include_router(critique.router, prefix='/api/v1/critique',
                    )
 
 if __name__ == '__main__':
-    api_settings = settings.fast_api_settings
     uvicorn.run(
         'main:app',
-        host=api_settings.FAST_API_HOST,
-        port=api_settings.FAST_API_PORT,
+        host='0.0.0.0',
+        port=8101,
     )

@@ -6,6 +6,7 @@ from fastapi import Request, HTTPException
 from fastapi.security import HTTPBearer, HTTPAuthorizationCredentials
 
 from .jwt_decoder import jwt_decoder
+from jwt import InvalidTokenError
 
 
 class JWTBearer(HTTPBearer):
@@ -29,6 +30,6 @@ class JWTBearer(HTTPBearer):
             payload: dict = jwt_decoder(jwtoken)
             expire_time: int = payload.get("exp")
             current_time: int = int(datetime.now().timestamp())
-        except BaseException:
+        except InvalidTokenError:
             return False
         return expire_time > current_time
