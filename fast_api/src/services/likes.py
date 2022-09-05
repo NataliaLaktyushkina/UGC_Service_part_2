@@ -27,6 +27,6 @@ class LikesHandler:
 
 
 def get_db(
-        likes_db: AbstractLikeDB = Depends(get_mongo)
+        likes_db: AbstractLikeDB = Depends(get_mongo),
 ) -> LikesHandler:
     return LikesHandler(MongoDBLikes(likes_db))
