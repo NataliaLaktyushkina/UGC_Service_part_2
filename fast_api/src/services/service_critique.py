@@ -50,7 +50,7 @@ class MongoDBCritique(AbstractCritiqueDB):
                  "user_id": user_id,
                  "movie_score": movie_score,
                  "text": text,
-                 "timestamp": datetime.now()}
+                 "timestamp": datetime.now()},
             )
 
             if result.inserted_id:
@@ -73,7 +73,7 @@ class MongoDBCritique(AbstractCritiqueDB):
             result = await self.critique_likes_collection.insert_one(
                 {"critique_id": critique_id,
                  "user_id": user_id,
-                 "like": like
+                 "like": like,
                  })
 
             if result.inserted_id:
@@ -82,7 +82,7 @@ class MongoDBCritique(AbstractCritiqueDB):
             # update
             result = await self.update_like(critique_id=critique_id,
                                             user_id=user_id,
-                                            like=like
+                                            like=like,
                                             )
 
             return result
@@ -98,7 +98,7 @@ class MongoDBCritique(AbstractCritiqueDB):
             result = await self.critique_likes_collection.update_one(
                 {"_id": doc_id},
                 {"$set":
-                     {"like": like}
+                     {"like": like},
                  })
 
             if result.modified_count:
@@ -110,25 +110,24 @@ class MongoDBCritique(AbstractCritiqueDB):
         critique_list = []
         pipeline = [
             {"$match":
-                 {"movie_id": movie_id}
+                 {"movie_id": movie_id},
              }]
         if sorting_type == DropDownSorting.by_date:
             pipeline.append(
                 {"$sort":
-                     {"timestamp": -1}
+                     {"timestamp": -1},
                  })
 
         async for doc in self.critique_collection.aggregate(pipeline):
             rating_pipeline = [{"$match":
-                                    {"critique_id": str(doc["_id"])}
-                                }
-                ,
+                                    {"critique_id": str(doc["_id"])},
+                                },
                                {"$group":
                                    {
                                        "_id": "$critique_id",
-                                       "rating": {"$sum": "$like"}
-                                   }
-                               }
+                                       "rating": {"$sum": "$like"},
+                                   },
+                               },
                                ]
 
             async for res in self.critique_likes_collection.aggregate(rating_pipeline):

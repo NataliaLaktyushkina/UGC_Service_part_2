@@ -1,0 +1,33 @@
+version: '2.2'
+services:
+    app:
+      build:
+        context: .
+        dockerfile: ./deploy/Dockerfile
+      ports:
+        - "5000:5000"
+      volumes:
+        - ./app:/code
+      environment:
+        PYTHONUNBUFFERED: 1
+        SENTRY_DSN: "https://bdac46e09f9444d1a209a8e570f92255@o1386750.ingest.sentry.io/6707192"
+      networks:
+        - elk
+
+
+    nginx:
+      image: nginx:1.19.2
+      volumes:
+        - ./deploy/etc/nginx/nginx.conf:/etc/nginx/nginx.conf:ro
+        - ./deploy/etc/nginx/conf.d:/etc/nginx/conf.d:ro
+      depends_on:
+        - app
+      ports:
+        - 8080:80
+      networks:
+        - elk
+
+
+networks:
+   elk:
+     name: elk
