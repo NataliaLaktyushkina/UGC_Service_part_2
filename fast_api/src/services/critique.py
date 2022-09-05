@@ -30,6 +30,6 @@ class CritiqueHandler:
 
 
 def get_db(
-        critique_db: AbstractCritiqueDB = Depends(get_mongo)
+        critique_db: AbstractCritiqueDB = Depends(get_mongo),
 ) -> CritiqueHandler:
     return CritiqueHandler(MongoDBCritique(critique_db))

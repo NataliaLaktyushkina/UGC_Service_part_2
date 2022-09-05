@@ -50,7 +50,7 @@ class MongoDBBookmark(AbstractBookmarkDB):
             result = await self.bookmarks_collection.update_one(
                 {"_id": doc_id},
                 {"$push":
-                     {"movie_id": movie_id}
+                     {"movie_id": movie_id},
                  })
 
             if result.modified_count:
@@ -74,7 +74,7 @@ class MongoDBBookmark(AbstractBookmarkDB):
             result = await self.bookmarks_collection.update_one(
                 {"_id": doc_id},
                 {"$pull":
-                     {"movie_id": movie_id}
+                    {"movie_id": movie_id}
                  })
 
             if result.modified_count:

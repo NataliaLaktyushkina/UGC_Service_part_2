@@ -11,7 +11,7 @@ from models.critique import CritiqueAdded, CritiqueLiked, Critique, DropDownSort
 class AbstractCritiqueDB(abc.ABC):
     @abc.abstractmethod
     def add_critique(self, movie_id: str, user_id: str,
-                     movie_score: int, text: str) -> bool:
+                     movie_score: int, text: str) -> Union[CritiqueAdded, JSONResponse]:
         pass
 
     @abc.abstractmethod
@@ -50,7 +50,7 @@ class MongoDBCritique(AbstractCritiqueDB):
                  "user_id": user_id,
                  "movie_score": movie_score,
                  "text": text,
-                 "timestamp": datetime.now()}
+                 "timestamp": datetime.now()},
             )
 
             if result.inserted_id:
@@ -73,7 +73,7 @@ class MongoDBCritique(AbstractCritiqueDB):
             result = await self.critique_likes_collection.insert_one(
                 {"critique_id": critique_id,
                  "user_id": user_id,
-                 "like": like
+                 "like": like,
                  })
 
             if result.inserted_id:
@@ -82,7 +82,7 @@ class MongoDBCritique(AbstractCritiqueDB):
             # update
             result = await self.update_like(critique_id=critique_id,
                                             user_id=user_id,
-                                            like=like
+                                            like=like,
                                             )
 
             return result
@@ -98,7 +98,7 @@ class MongoDBCritique(AbstractCritiqueDB):
             result = await self.critique_likes_collection.update_one(
                 {"_id": doc_id},
                 {"$set":
-                     {"like": like}
+                     {"like": like},
                  })
 
             if result.modified_count:
@@ -110,25 +110,24 @@ class MongoDBCritique(AbstractCritiqueDB):
         critique_list = []
         pipeline = [
             {"$match":
-                 {"movie_id": movie_id}
+                 {"movie_id": movie_id},
              }]
         if sorting_type == DropDownSorting.by_date:
             pipeline.append(
                 {"$sort":
-                     {"timestamp": -1}
+                     {"timestamp": -1},
                  })
 
         async for doc in self.critique_collection.aggregate(pipeline):
             rating_pipeline = [{"$match":
-                                    {"critique_id": str(doc["_id"])}
-                                }
-                ,
+                                    {"critique_id": str(doc["_id"])},
+                                },
                                {"$group":
                                    {
                                        "_id": "$critique_id",
-                                       "rating": {"$sum": "$like"}
-                                   }
-                               }
+                                       "rating": {"$sum": "$like"},
+                                   },
+                               },
                                ]
 
             async for res in self.critique_likes_collection.aggregate(rating_pipeline):
@@ -139,6 +138,9 @@ class MongoDBCritique(AbstractCritiqueDB):
         if sorting_type == DropDownSorting.by_rating:
             sorted_critique = sorted(critique_list,
                                      key=lambda r: r["critique_rating"], reverse=True)
+        elif sorting_type == DropDownSorting.by_date:
+            sorted_critique = sorted(critique_list,
+                                     key=lambda r: r["creation_date"], reverse=True)
         return [Critique(critique_id=str(cl["critique_id"]),
                          movie_score=cl["movie_score"],
                          critique_rating=cl["critique_rating"],
