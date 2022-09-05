@@ -36,6 +36,8 @@ logstash_handler = logstash.LogstashHandler('logstash', 5044, version=1)
 # Handler отвечают за вывод и отправку сообщений. В модуль logging доступно несколько классов-обработчиков
 # Например, SteamHandler для записи в поток stdin/stdout, DatagramHandler для UDP, FileHandler для syslog
 # LogstashHandler не только отправляет данные по TCP/UDP, но и форматирует логи в json-формат.
+
+
 app.logger.addHandler(logstash_handler)
 
 PROTECTED = [Depends(JWTBearer)]  # noqa: WPS407

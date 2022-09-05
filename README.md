@@ -7,6 +7,14 @@
 - [pre-commit](.pre-commit-config.yaml)
 
 ###  API:
+Запуск базы данных из папки *MongoDB*:
+
+`docker compose up`
+
+Запуск приложения из корня проекта:
+
+`docker compose up`
+
 http://127.0.0.1/api/openapi#/
 
 ### Закладки: ###
@@ -37,4 +45,7 @@ Endpoints:
 
 
 ### Логирование: ###
+Запуск из папки *logs*:
+
+`docker compose -f docker-compose-elk.yaml up`
 [Sentry](https://sentry.io/organizations/natalia-07/issues/)
