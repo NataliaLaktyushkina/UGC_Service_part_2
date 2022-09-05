@@ -21,6 +21,6 @@ class BookmarkHandler:
 
 
 def get_db(
-        bookmark_db: AbstractBookmarkDB = Depends(get_mongo)
+        bookmark_db: AbstractBookmarkDB = Depends(get_mongo),
 ) -> BookmarkHandler:
     return BookmarkHandler(MongoDBBookmark(bookmark_db))
