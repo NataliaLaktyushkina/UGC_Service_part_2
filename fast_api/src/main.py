@@ -1,7 +1,7 @@
+import logging
+
 import sentry_sdk
 import uvicorn
-import logging
-import logstash
 from fastapi import FastAPI, Depends
 from fastapi.responses import ORJSONResponse
 from motor import motor_asyncio
@@ -32,14 +32,12 @@ app = FastAPI(
 app.logger = logging.getLogger(__name__)
 app.logger.setLevel(logging.INFO)
 
-logstash_handler = logstash.LogstashHandler('logstash', 5044, version=1)
 # Handler отвечают за вывод и отправку сообщений. В модуль logging доступно несколько классов-обработчиков
 # Например, SteamHandler для записи в поток stdin/stdout, DatagramHandler для UDP, FileHandler для syslog
 # LogstashHandler не только отправляет данные по TCP/UDP, но и форматирует логи в json-формат.
+stdout_handler = logging.StreamHandler()
 
-
-app.logger.addHandler(logstash_handler)
-
+app.logger.addHandler(stdout_handler)
 PROTECTED = [Depends(JWTBearer)]  # noqa: WPS407
 
 
@@ -53,7 +51,7 @@ async def startup() -> None:
         username=mongo_settings.MONGO_USER,
         password=mongo_settings.MONGO_PASS,
     )
-    app.logger.info('Successfull connect to DB')
+    app.logger.info(msg='Successfull connect to DB')
 
 
 # @app.on_event('shutdown')

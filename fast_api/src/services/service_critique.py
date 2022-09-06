@@ -138,6 +138,9 @@ class MongoDBCritique(AbstractCritiqueDB):
         if sorting_type == DropDownSorting.by_rating:
             sorted_critique = sorted(critique_list,
                                      key=lambda r: r["critique_rating"], reverse=True)
+        else:
+            sorted_critique = sorted(critique_list,
+                                     key=lambda r: r["creation_date"], reverse=True)
         return [Critique(critique_id=str(cl["critique_id"]),
                          movie_score=cl["movie_score"],
                          critique_rating=cl["critique_rating"],
