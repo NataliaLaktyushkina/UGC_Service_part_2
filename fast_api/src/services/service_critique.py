@@ -10,17 +10,17 @@ from models.critique import CritiqueAdded, CritiqueLiked, Critique, DropDownSort
 
 class AbstractCritiqueDB(abc.ABC):
     @abc.abstractmethod
-    def add_critique(self, movie_id: str, user_id: str,
+    async def add_critique(self, movie_id: str, user_id: str,
                      movie_score: int, text: str) -> Union[CritiqueAdded, JSONResponse]:
         pass
 
     @abc.abstractmethod
-    def add_critique_like(self, critique_id: str, user_id: str,
-                          like: int) -> CritiqueLiked:
+    async def add_critique_like(self, critique_id: str, user_id: str,
+                          like: int) -> Union[JSONResponse, CritiqueLiked]:
         pass
 
     @abc.abstractmethod
-    def get_critique_list(self, movie_id: str, sorting_type: str) -> Critique:
+    async def get_critique_list(self, movie_id: str, sorting_type: DropDownSorting) -> List[Critique]:
         pass
 
 
@@ -55,8 +55,8 @@ class MongoDBCritique(AbstractCritiqueDB):
 
             if result.inserted_id:
                 return CritiqueAdded(added=True)
-        else:
-            return JSONResponse(content="You've already added review to current movie")
+
+        return JSONResponse(content="You've already added review to current movie")
 
     async def add_critique_like(self, critique_id: str, user_id: str,
                                 like: int) -> CritiqueLiked:
@@ -66,7 +66,7 @@ class MongoDBCritique(AbstractCritiqueDB):
         return critique_liked
 
     async def insert_critique_like(self, critique_id: str,
-                                   user_id: str, like: int) -> CritiqueLiked:
+                                   user_id: str, like: int) -> Union[JSONResponse, CritiqueLiked]:
         doc = await self.critique_likes_collection.find_one({"critique_id": critique_id,
                                                              "user_id": user_id})
         if doc is None:
@@ -78,6 +78,8 @@ class MongoDBCritique(AbstractCritiqueDB):
 
             if result.inserted_id:
                 return CritiqueLiked(liked=True)
+            else:
+                return JSONResponse(content="Failed to insert critique")
         else:
             # update
             result = await self.update_like(critique_id=critique_id,
@@ -115,7 +117,7 @@ class MongoDBCritique(AbstractCritiqueDB):
         if sorting_type == DropDownSorting.by_date:
             pipeline.append(
                 {"$sort":
-                     {"timestamp": -1},
+                     {"timestamp": -1},  # type: ignore
                  })
 
         async for doc in self.critique_collection.aggregate(pipeline):

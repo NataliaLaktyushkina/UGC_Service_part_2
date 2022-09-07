@@ -1,6 +1,7 @@
 import os
 from typing import Optional, Union
 
+import rsa
 from dotenv import load_dotenv
 from pydantic import BaseSettings, BaseModel
 
@@ -13,7 +14,7 @@ if not IS_DOCKER:
 class JWTSettings(BaseModel):
     """Setting for JWT Token"""
 
-    JWT_SECRET_KEY: Optional[str] = os.getenv('JWT_SECRET_KEY')  # noqa: WPS115
+    JWT_SECRET_KEY: Union[str, bytes, rsa.PublicKey, rsa.PrivateKey] = os.getenv('JWT_SECRET_KEY')  # noqa: WPS115
     JWT_ALGORITHM: Optional[str] = os.getenv('JWT_ALGORITHM')  # noqa: WPS115
 
 

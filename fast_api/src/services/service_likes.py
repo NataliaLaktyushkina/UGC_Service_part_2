@@ -9,19 +9,20 @@ from models.likes import MovieRating, LikeUpdated
 
 class AbstractLikeDB(abc.ABC):
     @abc.abstractmethod
-    def add_like(self, movie_id: str, user_id: str, score: int) -> bool:
+    async def add_like(self, movie_id: str, user_id: str, score: int) -> bool:
         pass
 
     @abc.abstractmethod
-    def get_movie_rating(self, movie_id: str) -> MovieRating:
+    async def get_movie_rating(self, movie_id: str) -> MovieRating:
         pass
 
     @abc.abstractmethod
-    def delete_like(self, movie_id: str, user_id: str) -> Union[bool, JSONResponse]:
+    async def delete_like(self, movie_id: str, user_id: str) -> Union[bool, JSONResponse]:
         pass
 
     @abc.abstractmethod
-    def update_like(self, movie_id: str, user_id: str, score: int, **kwargs) -> Union[LikeUpdated, JSONResponse]:
+    async def update_like(self, movie_id: str, user_id: str,   # type: ignore
+                    score: int, **kwargs) -> Union[LikeUpdated, JSONResponse]:
         pass
 
 
@@ -40,7 +41,7 @@ class MongoDBLikes(AbstractLikeDB):
 
     async def do_insert_like(self, user_id: str,
                              movie_id: str,
-                             score: int) -> bool:
+                             score: int) -> Union[bool, JSONResponse]:
         doc = await self.likes_collection.find_one({"movie_id": movie_id,
                                                     "user_id": user_id})
         if doc is None:
@@ -51,6 +52,7 @@ class MongoDBLikes(AbstractLikeDB):
 
             if result.inserted_id:
                 return True
+            return JSONResponse(content='Failed to insert like')
         else:
             result = await self.update_like(movie_id=movie_id,
                                             user_id=user_id,
@@ -60,7 +62,7 @@ class MongoDBLikes(AbstractLikeDB):
 
             return result
 
-    async def get_movie_rating(self, movie_id: str) -> MovieRating:
+    async def get_movie_rating(self, movie_id: str) -> Union[MovieRating, JSONResponse]:
 
         pipeline = [{"$match":
                          {"movie_id": movie_id},  # noqa E127
@@ -75,8 +77,10 @@ class MongoDBLikes(AbstractLikeDB):
         async for doc in self.likes_collection.aggregate(pipeline):
             return MovieRating(movie_id=movie_id,
                                rating=doc["avgscore"])
+        return JSONResponse(content='Movie has no rating')
 
-    async def update_like(self, movie_id: str, user_id: str, score: int, **kwargs) -> Union[LikeUpdated, JSONResponse]:
+    async def update_like(self, movie_id: str, user_id: str,  # type: ignore
+                          score: int, **kwargs) -> Union[LikeUpdated, JSONResponse]:
         if "document" in kwargs:
             doc = kwargs["document"]
         else:

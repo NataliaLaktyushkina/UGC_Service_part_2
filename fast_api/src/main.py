@@ -1,4 +1,6 @@
 import logging
+from typing import Any, Tuple
+from typing import MutableMapping
 
 import sentry_sdk
 import uvicorn
@@ -12,8 +14,6 @@ from api.v1 import likes
 from core.config import settings
 from db import mongo_db
 from services.jwt_check import JWTBearer
-from core.utils import RequestIdFilter
-
 
 sentry_sdk.init(
     dsn="https://bdac46e09f9444d1a209a8e570f92255@o1386750.ingest.sentry.io/6707192",
@@ -43,13 +43,22 @@ app.logger.addHandler(stdout_handler)
 PROTECTED = [Depends(JWTBearer)]  # noqa: WPS407
 
 
+class CustomAdapter(logging.LoggerAdapter):
+    def process(self, msg: Any,
+                kwargs: MutableMapping[str, Any]) -> Tuple[Any, MutableMapping[str, Any]]:
+        return self.extra['request_id'], kwargs
+
+
+logger = CustomAdapter(app.logger, {"request_id": None})
+
+
 @app.on_event('startup')
 async def startup() -> None:
     """Start up settings - connect to Mongo DB"""
     mongo_settings = settings.mongo_settings
     mongo_db.mongo_db = motor_asyncio.AsyncIOMotorClient(
         mongo_settings.MONGO_HOST,
-        int(mongo_settings.MONGO_PORT),
+        int(mongo_settings.MONGO_PORT),  # type: ignore
         username=mongo_settings.MONGO_USER,
         password=mongo_settings.MONGO_PASS,
     )
@@ -57,15 +66,12 @@ async def startup() -> None:
 
 
 @app.middleware("http")
-async def before_request(request: Request, call_next):
+async def before_request(request: Request, call_next):  # type: ignore
     request_id = request.headers.get('X-Request-Id')
     if not request_id:
-        app.logger.warning(f'request_id {request_id}')
+        logger.warning(f'request_id {request_id}')
         raise RuntimeError('request id is required')
     return await call_next(request)
-
-
-app.logger.addFilter(RequestIdFilter())
 
 
 app.include_router(bookmarks.router, prefix='/api/v1/bookmarks',
