@@ -2,7 +2,7 @@ import logging
 
 import sentry_sdk
 import uvicorn
-from fastapi import FastAPI, Depends
+from fastapi import FastAPI, Depends, Request
 from fastapi.responses import ORJSONResponse
 from motor import motor_asyncio
 
@@ -12,6 +12,8 @@ from api.v1 import likes
 from core.config import settings
 from db import mongo_db
 from services.jwt_check import JWTBearer
+from core.utils import RequestIdFilter
+
 
 sentry_sdk.init(
     dsn="https://bdac46e09f9444d1a209a8e570f92255@o1386750.ingest.sentry.io/6707192",
@@ -54,9 +56,16 @@ async def startup() -> None:
     app.logger.info(msg='Successfull connect to DB')
 
 
-# @app.on_event('shutdown')
-# async def shutdown():
-#     await eventbus_kafka.db_kafka.stop()
+@app.middleware("http")
+async def before_request(request: Request, call_next):
+    request_id = request.headers.get('X-Request-Id')
+    if not request_id:
+        app.logger.warning(f'request_id {request_id}')
+        raise RuntimeError('request id is required')
+    return await call_next(request)
+
+
+app.logger.addFilter(RequestIdFilter())
 
 
 app.include_router(bookmarks.router, prefix='/api/v1/bookmarks',
