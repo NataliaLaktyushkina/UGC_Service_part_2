@@ -31,15 +31,15 @@ app = FastAPI(
     default_response_class=ORJSONResponse,
 )
 
-app.logger = logging.getLogger(__name__)
-app.logger.setLevel(logging.INFO)
+logger = logging.getLogger(__name__)
+logger.setLevel(logging.INFO)
 
 # Handler отвечают за вывод и отправку сообщений. В модуль logging доступно несколько классов-обработчиков
 # Например, SteamHandler для записи в поток stdin/stdout, DatagramHandler для UDP, FileHandler для syslog
 # LogstashHandler не только отправляет данные по TCP/UDP, но и форматирует логи в json-формат.
 stdout_handler = logging.StreamHandler()
 
-app.logger.addHandler(stdout_handler)
+logger.addHandler(stdout_handler)
 PROTECTED = [Depends(JWTBearer)]  # noqa: WPS407
 
 
@@ -49,7 +49,7 @@ class CustomAdapter(logging.LoggerAdapter):
         return self.extra['request_id'], kwargs
 
 
-logger = CustomAdapter(app.logger, {"request_id": None})
+logger_a = CustomAdapter(logger, {"request_id": None})
 
 
 @app.on_event('startup')
@@ -62,7 +62,7 @@ async def startup() -> None:
         username=mongo_settings.MONGO_USER,
         password=mongo_settings.MONGO_PASS,
     )
-    app.logger.info(msg='Successfull connect to DB')
+    logger.info(msg='Successfull connect to DB')
 
 
 @app.middleware("http")
