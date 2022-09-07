@@ -1,0 +1,8 @@
+fastapi==0.81.0
+sentry_sdk[fastapi]==1.9.6
+uvicorn==0.18.2
+motor==3.0.0
+orjson==3.4.1
+pydantic==1.9.1
+python-dotenv==0.20.0
+rsa==4.9

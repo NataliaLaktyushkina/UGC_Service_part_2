@@ -26,6 +26,7 @@ jobs:
         python -m pip install --upgrade pip
         pip install wemake-python-styleguide
         pip install flake8-html
+        pip install mypy
         if [ -f requirements.txt ]; then pip install -r requirements.txt; fi
 
     - name: Lint with styleguide
@@ -36,10 +37,10 @@ jobs:
         # exit-zero treats all errors as warnings. The GitHub editor is 127 chars wide
         flake8 . --count --exit-zero --max-complexity=10 --max-line-length=127 --statistics
 
-#   - name: Mypy
+#     - name: Mypy
 #       run: |
-#         # stop the build if there are Python syntax errors or undefined types
-#         mypy .
+#         stop the build if there are Python syntax errors or undefined types
+#         mypy . --config=mypy.cfg
 
     - name: send telegram message
       uses: appleboy/telegram-action@master

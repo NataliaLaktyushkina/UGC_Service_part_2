@@ -1,4 +1,5 @@
 import abc
+from typing import Any
 from typing import Union
 
 from fastapi.responses import JSONResponse
@@ -10,15 +11,15 @@ from models.bookmarks import BookmarksList
 class AbstractBookmarkDB(abc.ABC):
 
     @abc.abstractmethod
-    def add_bookmark(self, movie_id: str, user_id: str) -> bool:
+    async def add_bookmark(self, movie_id: str, user_id: str) -> bool:
         pass
 
     @abc.abstractmethod
-    def get_bookmarks_list(self, user_id: str) -> BookmarksList:
+    async def get_bookmarks_list(self, user_id: str) -> BookmarksList:
         pass
 
     @abc.abstractmethod
-    def delete_bookmark(self, movie_id: str, user_id: str) -> Union[bool, JSONResponse]:
+    async def delete_bookmark(self, movie_id: str, user_id: str) -> Union[bool, JSONResponse]:
         pass
 
 
@@ -58,7 +59,7 @@ class MongoDBBookmark(AbstractBookmarkDB):
 
         return False
 
-    async def get_bookmarks_list(self, user_id: str) -> BookmarksList:
+    async def get_bookmarks_list(self, user_id: str) -> Any:
         document = await self.bookmarks_collection.find_one({"user_id": user_id})
         movies = document["movie_id"]
         return movies
@@ -77,3 +78,5 @@ class MongoDBBookmark(AbstractBookmarkDB):
 
             if result.modified_count:
                 return True
+            else:
+                return  JSONResponse(content='Failed to delete bookmark')

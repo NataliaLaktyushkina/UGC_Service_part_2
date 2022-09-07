@@ -1,8 +1,10 @@
+import logging
+from typing import Any, Tuple
+from typing import MutableMapping
+
 import sentry_sdk
 import uvicorn
-import logging
-import logstash
-from fastapi import FastAPI, Depends
+from fastapi import FastAPI, Depends, Request
 from fastapi.responses import ORJSONResponse
 from motor import motor_asyncio
 
@@ -29,18 +31,25 @@ app = FastAPI(
     default_response_class=ORJSONResponse,
 )
 
-app.logger = logging.getLogger(__name__)
-app.logger.setLevel(logging.INFO)
+logger = logging.getLogger(__name__)
+logger.setLevel(logging.INFO)
 
-logstash_handler = logstash.LogstashHandler('logstash', 5044, version=1)
 # Handler отвечают за вывод и отправку сообщений. В модуль logging доступно несколько классов-обработчиков
 # Например, SteamHandler для записи в поток stdin/stdout, DatagramHandler для UDP, FileHandler для syslog
 # LogstashHandler не только отправляет данные по TCP/UDP, но и форматирует логи в json-формат.
+stdout_handler = logging.StreamHandler()
 
-
-app.logger.addHandler(logstash_handler)
-
+logger.addHandler(stdout_handler)
 PROTECTED = [Depends(JWTBearer)]  # noqa: WPS407
+
+
+class CustomAdapter(logging.LoggerAdapter):
+    def process(self, msg: Any,
+                kwargs: MutableMapping[str, Any]) -> Tuple[Any, MutableMapping[str, Any]]:
+        return self.extra['request_id'], kwargs
+
+
+logger_a = CustomAdapter(logger, {"request_id": None})
 
 
 @app.on_event('startup')
@@ -49,16 +58,20 @@ async def startup() -> None:
     mongo_settings = settings.mongo_settings
     mongo_db.mongo_db = motor_asyncio.AsyncIOMotorClient(
         mongo_settings.MONGO_HOST,
-        int(mongo_settings.MONGO_PORT),
+        int(mongo_settings.MONGO_PORT),  # type: ignore
         username=mongo_settings.MONGO_USER,
         password=mongo_settings.MONGO_PASS,
     )
-    app.logger.info('Successfull connect to DB')
+    logger.info(msg='Successfull connect to DB')
 
 
-# @app.on_event('shutdown')
-# async def shutdown():
-#     await eventbus_kafka.db_kafka.stop()
+@app.middleware("http")
+async def before_request(request: Request, call_next):  # type: ignore
+    request_id = request.headers.get('X-Request-Id')
+    if not request_id:
+        logger.warning(f'request_id {request_id}')
+        raise RuntimeError('request id is required')
+    return await call_next(request)
 
 
 app.include_router(bookmarks.router, prefix='/api/v1/bookmarks',
