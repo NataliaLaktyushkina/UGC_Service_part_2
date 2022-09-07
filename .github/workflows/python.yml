@@ -40,7 +40,7 @@ jobs:
     - name: Mypy
       run: |
         # stop the build if there are Python syntax errors or undefined types
-        mypy .
+        mypy . --config=mypy.cfg
 
     - name: send telegram message
       uses: appleboy/telegram-action@master
