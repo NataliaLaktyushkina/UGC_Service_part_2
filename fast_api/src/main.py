@@ -17,12 +17,8 @@ from services.jwt_check import JWTBearer
 
 if settings.sentry:
     sentry_sdk.init(
-        dsn=settings.sentry_dsn,
-
-        # Set traces_sample_rate to 1.0 to capture 100%
-        # of transactions for performance monitoring.
-        # We recommend adjusting this value in production,
-        traces_sample_rate=1.0,
+        dsn=settings.sentry_ssettings.sentry_dsn,
+        traces_sample_rate=settings.sentry_ssettings.sentry_dsn,
 )
 
 app = FastAPI(

@@ -48,8 +48,9 @@ class FastAPISettings(BaseModel):
     FAST_API_PORT: Optional[str] = os.getenv('FAST_API_PORT')  # noqa: WPS115
 
 
-class Sentry(BaseModel):
+class SentrySettings(BaseModel):
     sentry_dsn: Optional[str] = os.getenv("SENTRY_DSN")
+    traces_sample_rate: Optional[str] = os.getenv("traces_sample_rate")
 
 
 class Settings(BaseSettings):
@@ -70,8 +71,10 @@ class Settings(BaseSettings):
 
 class PromSettings(Settings):
     mongo_settings: MongoSettingsProm = MongoSettingsProm()
-    sentry_dsn: Optional[str] = os.getenv("SENTRY_DSN")
     sentry: bool = True
+    sentry_ssettings: SentrySettings = SentrySettings()
+
+
 
 
 class DevSettings(Settings):
