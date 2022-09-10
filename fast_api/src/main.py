@@ -15,13 +15,14 @@ from core.config import settings
 from db import mongo_db
 from services.jwt_check import JWTBearer
 
-sentry_sdk.init(
-    dsn=settings.sentry_dsn,
+if settings.sentry:
+    sentry_sdk.init(
+        dsn=settings.sentry_dsn,
 
-    # Set traces_sample_rate to 1.0 to capture 100%
-    # of transactions for performance monitoring.
-    # We recommend adjusting this value in production,
-    traces_sample_rate=1.0,
+        # Set traces_sample_rate to 1.0 to capture 100%
+        # of transactions for performance monitoring.
+        # We recommend adjusting this value in production,
+        traces_sample_rate=1.0,
 )
 
 app = FastAPI(

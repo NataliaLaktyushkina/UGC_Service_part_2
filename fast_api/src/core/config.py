@@ -48,6 +48,10 @@ class FastAPISettings(BaseModel):
     FAST_API_PORT: Optional[str] = os.getenv('FAST_API_PORT')  # noqa: WPS115
 
 
+class Sentry(BaseModel):
+    sentry_dsn: Optional[str] = os.getenv("SENTRY_DSN")
+
+
 class Settings(BaseSettings):
 
     PROJECT_NAME: Optional[str] = os.getenv('PROJECT_NAME')  # noqa: WPS115
@@ -58,8 +62,6 @@ class Settings(BaseSettings):
 
     fast_api_settings: FastAPISettings = FastAPISettings()
 
-    sentry_dsn:Optional[str] = os.getenv("SENTRY_DSN")
-
     class Config:
         env_file = '.env'
         env_file_encoding = 'utf-8'
@@ -68,10 +70,13 @@ class Settings(BaseSettings):
 
 class PromSettings(Settings):
     mongo_settings: MongoSettingsProm = MongoSettingsProm()
+    sentry_dsn: Optional[str] = os.getenv("SENTRY_DSN")
+    sentry: bool = True
 
 
 class DevSettings(Settings):
     mongo_settings: MongoSettingsDev = MongoSettingsDev()
+    sentry: bool = False
 
 
 def get_settings() -> Union[PromSettings, DevSettings]:
