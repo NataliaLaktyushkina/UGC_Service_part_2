@@ -74,15 +74,20 @@ async def before_request(request: Request, call_next):  # type: ignore
     return await call_next(request)
 
 
-app.include_router(bookmarks.router, prefix='/api/v1/bookmarks',
-                   tags=['bookmarks'], dependencies=PROTECTED,
-                   )
-app.include_router(likes.router, prefix='/api/v1/likes',
-                   tags=['likes'], dependencies=PROTECTED,
-                   )
-app.include_router(critique.router, prefix='/api/v1/critique',
-                   tags=['critique'], dependencies=PROTECTED,
-                   )
+app.include_router(
+    bookmarks.router, prefix='/api/v1/bookmarks',
+    tags=['bookmarks'], dependencies=PROTECTED,
+)
+
+app.include_router(
+    likes.router, prefix='/api/v1/likes',
+    tags=['likes'], dependencies=PROTECTED,
+)
+
+app.include_router(
+    critique.router, prefix='/api/v1/critique',
+    tags=['critique'], dependencies=PROTECTED,
+)
 
 if __name__ == '__main__':
     uvicorn.run(

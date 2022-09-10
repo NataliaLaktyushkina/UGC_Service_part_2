@@ -64,7 +64,10 @@ class MongoDBBookmark(AbstractBookmarkDB):
         movies = document["movie_id"]
         return movies
 
-    async def delete_bookmark(self, movie_id: str, user_id: str) -> Union[bool, JSONResponse]:
+    async def delete_bookmark(
+            self, movie_id: str,
+            user_id: str
+    ) -> Union[bool, JSONResponse]:
         doc = await self.bookmarks_collection.find_one({"user_id": user_id})
         if doc is None:
             return JSONResponse(content="User id was not found")

@@ -9,7 +9,11 @@ from models.likes import MovieRating, LikeUpdated
 
 class AbstractLikeDB(abc.ABC):
     @abc.abstractmethod
-    async def add_like(self, movie_id: str, user_id: str, score: int) -> Union[bool, JSONResponse]:
+    async def add_like(
+            self, movie_id: str,
+            user_id: str,
+            score: int
+    ) -> Union[bool, JSONResponse]:
         pass
 
     @abc.abstractmethod
@@ -33,15 +37,20 @@ class MongoDBLikes(AbstractLikeDB):
         self.ugc_db = self.client.ugc_database
         self.likes_collection = self.ugc_db["likes"]
 
-    async def add_like(self, movie_id: str, user_id: str, score: int) -> Union[bool, JSONResponse]:
+    async def add_like(
+            self, movie_id: str,
+            user_id: str, score: int
+    ) -> Union[bool, JSONResponse]:
         """Add Like to Mongo DB"""
         like_was_added = await self.do_insert_like(user_id,
                                                    movie_id, score)
         return like_was_added
 
-    async def do_insert_like(self, user_id: str,
-                             movie_id: str,
-                             score: int) -> Union[bool, JSONResponse]:
+    async def do_insert_like(
+            self, user_id: str,
+            movie_id: str,
+            score: int
+    ) -> Union[bool, JSONResponse]:
         doc = await self.likes_collection.find_one({"movie_id": movie_id,
                                                     "user_id": user_id})
         if doc is None:

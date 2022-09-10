@@ -32,16 +32,21 @@ class MongoDBCritique(AbstractCritiqueDB):
         self.critique_collection = self.ugc_db["critique"]
         self.critique_likes_collection = self.ugc_db["critique_likes"]
 
-    async def add_critique(self, movie_id: str, user_id: str,
-                           movie_score: int, text: str) -> Union[CritiqueAdded, JSONResponse]:
+    async def add_critique(
+            self, movie_id: str,
+            user_id: str,
+            movie_score: int, text: str
+    ) -> Union[CritiqueAdded, JSONResponse]:
         """Add critique to Mongo DB"""
         critique_was_added = await self.do_insert_critique(user_id, movie_id,
                                                            movie_score, text)
         return critique_was_added
 
-    async def do_insert_critique(self, user_id: str,
-                                 movie_id: str,
-                                 movie_score: int, text: str) -> Union[CritiqueAdded, JSONResponse]:
+    async def do_insert_critique(
+            self, user_id: str,
+            movie_id: str,
+            movie_score: int, text: str
+    ) -> Union[CritiqueAdded, JSONResponse]:
         doc = await self.critique_collection.find_one({"movie_id": movie_id,
                                                        "user_id": user_id})
         if doc is None:
@@ -89,7 +94,10 @@ class MongoDBCritique(AbstractCritiqueDB):
 
             return result
 
-    async def update_like(self, critique_id: str, user_id: str, like: int) -> Union[JSONResponse, CritiqueLiked]:
+    async def update_like(
+            self, critique_id: str,
+            user_id: str, like: int
+    ) -> Union[JSONResponse, CritiqueLiked]:
 
         doc = await self.critique_likes_collection.find_one({"critique_id": critique_id,
                                                              "user_id": user_id})
@@ -107,8 +115,10 @@ class MongoDBCritique(AbstractCritiqueDB):
                 return CritiqueLiked(liked=True)
             return CritiqueLiked(liked=False)
 
-    async def get_critique_list(self, movie_id: str,
-                                sorting_type: DropDownSorting) -> list[Critique]:  # type: ignore
+    async def get_critique_list(
+            self, movie_id: str,
+            sorting_type: DropDownSorting
+    ) -> list[Critique]:  # type: ignore
         critique_list = []
         pipeline = [
             {"$match":
