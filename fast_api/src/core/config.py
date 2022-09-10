@@ -15,8 +15,11 @@ class JWTSettings(BaseModel):
     """Setting for JWT Token"""
 
     # JWT_SECRET_KEY: Optional[str] = os.getenv('JWT_SECRET_KEY')  # noqa: WPS115
-    JWT_SECRET_KEY:  Union[str, bytes, rsa.PublicKey, rsa.PrivateKey] = os.getenv('JWT_SECRET_KEY')
+    JWT_SECRET_KEY: Union[str, bytes, rsa.PublicKey, rsa.PrivateKey] = os.getenv('JWT_SECRET_KEY')
     JWT_ALGORITHM: Optional[str] = os.getenv('JWT_ALGORITHM')  # noqa: WPS115
+
+    class Config:
+        arbitrary_types_allowed = True
 
 
 class MongoUser(BaseModel):
@@ -54,6 +57,8 @@ class Settings(BaseSettings):
     jwt_settings: JWTSettings = JWTSettings()
 
     fast_api_settings: FastAPISettings = FastAPISettings()
+
+    sentry_dsn:Optional[str] = os.getenv("SENTRY_DSN")
 
     class Config:
         env_file = '.env'

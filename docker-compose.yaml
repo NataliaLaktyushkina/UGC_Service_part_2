@@ -8,7 +8,7 @@ services:
     image: fast_api
     environment:
       PYTHONUNBUFFERED: 1
-      SENTRY_DSN: "https://bdac46e09f9444d1a209a8e570f92255@o1386750.ingest.sentry.io/6707192"
+      SENTRY_DSN: ${SENTRY_DSN}
     logging:
       driver: gelf
       options:

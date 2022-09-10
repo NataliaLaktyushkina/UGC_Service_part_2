@@ -16,7 +16,7 @@ from db import mongo_db
 from services.jwt_check import JWTBearer
 
 sentry_sdk.init(
-    dsn="https://bdac46e09f9444d1a209a8e570f92255@o1386750.ingest.sentry.io/6707192",
+    dsn=settings.sentry_dsn,
 
     # Set traces_sample_rate to 1.0 to capture 100%
     # of transactions for performance monitoring.
