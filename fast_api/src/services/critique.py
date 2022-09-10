@@ -1,4 +1,4 @@
-from typing import Union, List
+from typing import Union
 
 from fastapi import Depends
 from fastapi.responses import JSONResponse
@@ -24,7 +24,7 @@ class CritiqueHandler:
                                                               like)
         return like_added
 
-    async def get_list(self, movie_id: str, sorting: DropDownSorting) -> List[Critique]:
+    async def get_list(self, movie_id: str, sorting: DropDownSorting) -> list[Critique]: # type: ignore
         return await self.critique_db.get_critique_list(movie_id=movie_id,
                                                         sorting_type=sorting)
 

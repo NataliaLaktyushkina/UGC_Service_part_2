@@ -1,6 +1,6 @@
 import abc
 from datetime import datetime
-from typing import Union, List
+from typing import Union
 
 from fastapi.responses import JSONResponse
 from motor.motor_asyncio import AsyncIOMotorClient
@@ -20,7 +20,7 @@ class AbstractCritiqueDB(abc.ABC):
         pass
 
     @abc.abstractmethod
-    async def get_critique_list(self, movie_id: str, sorting_type: DropDownSorting) -> List[Critique]:
+    async def get_critique_list(self, movie_id: str, sorting_type: DropDownSorting) -> list[Critique]: # type: ignore
         pass
 
 
@@ -108,7 +108,7 @@ class MongoDBCritique(AbstractCritiqueDB):
             return CritiqueLiked(liked=False)
 
     async def get_critique_list(self, movie_id: str,
-                                sorting_type: DropDownSorting) -> List[Critique]:
+                                sorting_type: DropDownSorting) -> list[Critique]:  # type: ignore
         critique_list = []
         pipeline = [
             {"$match":

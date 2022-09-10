@@ -1,19 +1,19 @@
 import http
 from datetime import datetime
-from typing import List, Union, Optional, Any
+from typing import Union, Optional, Any
 
 from fastapi import Request, HTTPException
 from fastapi.security import HTTPBearer, HTTPAuthorizationCredentials
+from jwt import InvalidTokenError
 
 from .jwt_decoder import jwt_decoder
-from jwt import InvalidTokenError
 
 
 class JWTBearer(HTTPBearer):
     def __init__(self, auto_error: bool = True):
         super(JWTBearer, self).__init__(auto_error=auto_error)
 
-    async def __call__(self, request: Request) -> Union[List[str], Optional[Any]]:
+    async def __call__(self, request: Request) -> Union[list[str], Optional[Any]]:  # type: ignore
         credentials: HTTPAuthorizationCredentials = await super(JWTBearer, self).__call__(request=request)
         if credentials:
             if not credentials.scheme == "Bearer":

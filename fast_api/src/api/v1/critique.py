@@ -1,11 +1,9 @@
-from typing import List
-
 from fastapi import APIRouter, Depends, Query
 
+from core.logger import logger
 from models.critique import CritiqueAdded, CritiqueLiked, Critique, DropDownSorting
 from services.critique import CritiqueHandler, get_db
 from services.jwt_check import JWTBearer
-from core.logger import logger
 
 router = APIRouter()
 
@@ -45,7 +43,7 @@ async def post_critique_like(critique_id: str,
 async def get_critique_list(movie_id: str,
                             user_id: str = Depends(JWTBearer()),
                             service: CritiqueHandler = Depends(get_db),
-                            sorting: DropDownSorting = Query(DropDownSorting.by_date)) -> List[Critique]:
+                            sorting: DropDownSorting = Query(DropDownSorting.by_date)) -> list[Critique]:  # type: ignore
     """Get movie's critique list with sorting"""
     logger.info(f"endpoint get critique list : movie_id {movie_id}, "
                 f"user_id {user_id}")

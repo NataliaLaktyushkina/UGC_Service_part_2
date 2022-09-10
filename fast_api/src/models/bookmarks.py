@@ -1,5 +1,4 @@
 from .json_config import BaseOrjsonModel
-from typing import List
 
 
 class BookmarkAdded(BaseOrjsonModel):
@@ -13,7 +12,7 @@ class BookmarksList(BaseOrjsonModel):
     """
         This is the description of bookmarks list response  model
     """
-    movie_id: List[str]
+    movie_id: list[str]  # type: ignore
 
 
 class BookmarkDeleted(BaseOrjsonModel):
