@@ -1,9 +1,9 @@
 import os
-import rsa
 from typing import Optional, Union
 
+import rsa
 from dotenv import load_dotenv
-from pydantic import BaseSettings, BaseModel
+from pydantic import BaseSettings
 
 IS_DOCKER = os.environ.get('AM_I_IN_A_DOCKER_CONTAINER', False)
 
@@ -11,29 +11,28 @@ if not IS_DOCKER:
     load_dotenv()   # take environment variables from .env.
 
 
-class JWTSettings(BaseModel):
+class JWTSettings(BaseSettings):
     """Setting for JWT Token"""
 
-    # JWT_SECRET_KEY: Optional[str] = os.getenv('JWT_SECRET_KEY')  # noqa: WPS115
-    JWT_SECRET_KEY: Union[str, bytes, rsa.PublicKey, rsa.PrivateKey] = os.getenv('JWT_SECRET_KEY')
-    JWT_ALGORITHM: Optional[str] = os.getenv('JWT_ALGORITHM')  # noqa: WPS115
+    JWT_SECRET_KEY: Union[str, bytes, rsa.PublicKey, rsa.PrivateKey]
+    JWT_ALGORITHM: Optional[str]
 
     class Config:
         arbitrary_types_allowed = True
 
 
-class MongoUser(BaseModel):
+class MongoUser(BaseSettings):
     """Mongo DB username and password"""
 
-    MONGO_USER: Optional[str] = os.getenv('MONGO_USER')  # noqa: WPS115
-    MONGO_PASS: Optional[str] = os.getenv('MONGO_PASS')  # noqa: WPS115
+    MONGO_USER: Optional[str]
+    MONGO_PASS: Optional[str]   # noqa: WPS115
 
 
 class MongoSettingsProm(MongoUser):
     """Mongo DB host and port for production"""
 
-    MONGO_HOST: Optional[str] = os.getenv('MONGO_HOST')  # noqa: WPS115
-    MONGO_PORT: Optional[str] = os.getenv('MONGO_PORT')  # noqa: WPS115
+    MONGO_HOST: Optional[str]
+    MONGO_PORT: Optional[str]
 
 
 class MongoSettingsDev(MongoUser):
@@ -43,24 +42,22 @@ class MongoSettingsDev(MongoUser):
     MONGO_PORT: Optional[str] = os.getenv('MONGO_PORT_DEBUG')  # noqa: WPS115
 
 
-class FastAPISettings(BaseModel):
-    FAST_API_HOST: Optional[str] = os.getenv('FAST_API_HOST')  # noqa: WPS115
-    FAST_API_PORT: Optional[str] = os.getenv('FAST_API_PORT')  # noqa: WPS115
+class FastAPISettings(BaseSettings):
+    FAST_API_HOST: Optional[str]
+    FAST_API_PORT: Optional[str]
 
 
-class SentrySettings(BaseModel):
-    sentry_dsn: Optional[str] = os.getenv("SENTRY_DSN")
-    traces_sample_rate: Optional[str] = os.getenv("traces_sample_rate")
+class SentrySettings(BaseSettings):
+    sentry_dsn: Optional[str]
+    traces_sample_rate: Optional[str]
 
 
 class Settings(BaseSettings):
 
-    PROJECT_NAME: Optional[str] = os.getenv('PROJECT_NAME')  # noqa: WPS115
-
-    TOPIC: Optional[str] = os.getenv('TOPIC')  # noqa: WPS115
+    PROJECT_NAME: Optional[str]
+    TOPIC: Optional[str]
 
     jwt_settings: JWTSettings = JWTSettings()
-
     fast_api_settings: FastAPISettings = FastAPISettings()
 
     class Config:
@@ -73,8 +70,6 @@ class PromSettings(Settings):
     mongo_settings: MongoSettingsProm = MongoSettingsProm()
     sentry: bool = True
     sentry_ssettings: SentrySettings = SentrySettings()
-
-
 
 
 class DevSettings(Settings):
