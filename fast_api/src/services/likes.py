@@ -10,7 +10,10 @@ class LikesHandler:
     def __init__(self, likes_db: AbstractLikeDB):
         self.likes_db = likes_db
 
-    async def add_like(self, movie_id: str, user_id: str, score: int) -> LikeAdded:
+    async def add_like(
+            self, movie_id: str,
+            user_id: str, score: int
+    ) -> LikeAdded:
         like_added = await self.likes_db.add_like(movie_id, user_id, score)
         return LikeAdded(added=like_added)
 
@@ -21,7 +24,10 @@ class LikesHandler:
         like_deleted = await self.likes_db.delete_like(movie_id, user_id)
         return LikeDeleted(deleted=like_deleted)
 
-    async def update_like(self, movie_id: str, user_id: str, score: int) -> Union[LikeUpdated, JSONResponse]:
+    async def update_like(
+            self, movie_id: str,
+            user_id: str, score: int
+    ) -> Union[LikeUpdated, JSONResponse]:
         like_updated = await self.likes_db.update_like(movie_id, user_id, score)
         return like_updated
 

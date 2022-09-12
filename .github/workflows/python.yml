@@ -12,7 +12,7 @@ jobs:
     runs-on: ubuntu-latest
     strategy:
       matrix:
-        version: [3.7, 3.8, 3.9]
+        version: ["3.9", "3.10"]
     steps:
     - uses: actions/checkout@v2
 
@@ -27,7 +27,7 @@ jobs:
         pip install wemake-python-styleguide
         pip install flake8-html
         pip install mypy
-        if [ -f requirements.txt ]; then pip install -r requirements.txt; fi
+#         if [ -f requirements.txt ]; then pip install -r requirements.txt; fi
 
     - name: Lint with styleguide
       run: |

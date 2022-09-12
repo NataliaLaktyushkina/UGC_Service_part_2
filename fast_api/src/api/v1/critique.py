@@ -1,22 +1,22 @@
-from typing import List
-
 from fastapi import APIRouter, Depends, Query
 
+from core.logger import logger
 from models.critique import CritiqueAdded, CritiqueLiked, Critique, DropDownSorting
 from services.critique import CritiqueHandler, get_db
 from services.jwt_check import JWTBearer
-from core.logger import logger
 
 router = APIRouter()
 
 
 @router.post('/', description="Add a movie review",
              response_description="Review added")
-async def post_critique(movie_id: str,
-                        text: str,
-                        user_id: str = Depends(JWTBearer()),
-                        movie_score: int = Query(default=0, ge=0, le=10),
-                        service: CritiqueHandler = Depends(get_db)) -> CritiqueAdded:
+async def post_critique(
+        movie_id: str,
+        text: str,
+        user_id: str = Depends(JWTBearer()),
+        movie_score: int = Query(default=0, ge=0, le=10),
+        service: CritiqueHandler = Depends(get_db)
+) -> CritiqueAdded:
     """Add critique to movie"""
     logger.info(f"endpoint add critique: movie_id {movie_id}, "
                 f"user_id {user_id}, score {movie_score}")
@@ -28,10 +28,12 @@ async def post_critique(movie_id: str,
 
 @router.post('/like', description="Add critique like",
              response_description="Like added")
-async def post_critique_like(critique_id: str,
-                             like: int = Query([-1, 1]),
-                             user_id: str = Depends(JWTBearer()),
-                             service: CritiqueHandler = Depends(get_db)) -> CritiqueLiked:
+async def post_critique_like(
+        critique_id: str,
+        like: int = Query([-1, 1]),
+        user_id: str = Depends(JWTBearer()),
+        service: CritiqueHandler = Depends(get_db)
+) -> CritiqueLiked:
     """Add critique to movie"""
     logger.info(f"endpoint add critique loke : critique_id {critique_id}, "
                 f"user_id {user_id}, like {like}")
@@ -42,10 +44,12 @@ async def post_critique_like(critique_id: str,
 
 @router.get('/', description="Get movie's critique list",
             response_description="Provided movie's critique list")
-async def get_critique_list(movie_id: str,
-                            user_id: str = Depends(JWTBearer()),
-                            service: CritiqueHandler = Depends(get_db),
-                            sorting: DropDownSorting = Query(DropDownSorting.by_date)) -> List[Critique]:
+async def get_critique_list(
+        movie_id: str,
+        user_id: str = Depends(JWTBearer()),
+        service: CritiqueHandler = Depends(get_db),
+        sorting: DropDownSorting = Query(DropDownSorting.by_date)
+) -> list[Critique]:  # type: ignore
     """Get movie's critique list with sorting"""
     logger.info(f"endpoint get critique list : movie_id {movie_id}, "
                 f"user_id {user_id}")

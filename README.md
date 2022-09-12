@@ -6,6 +6,10 @@
 - [Push and pull request](.github/workflows/python.yml)
 - [pre-commit](.pre-commit-config.yaml)
 
+
+### Исследование хранилища ###
+[research](/research)
+
 ###  API:
 Запуск базы данных из папки *MongoDB*:
 

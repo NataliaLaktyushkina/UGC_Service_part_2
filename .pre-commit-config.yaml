@@ -19,8 +19,9 @@ repos:
         language: python
         types: [python]
 
+
 -   repo: https://github.com/pre-commit/mirrors-mypy
     rev: 9feadeb
     hooks:
     - id: mypy
-      args: ["--config=mypy.cfg"]
+      args: [--python-version=3.10, --config=mypy.cfg]

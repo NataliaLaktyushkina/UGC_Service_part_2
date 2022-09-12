@@ -11,10 +11,12 @@ router = APIRouter()
 
 @router.post('/', description="Add score",
              response_description="Movie scored")
-async def post_score(movie_id: str,
-                     score: int = Query(default=0, ge=0, le=10),
-                     user_id: str = Depends(JWTBearer()),
-                     service: LikesHandler = Depends(get_db)) -> LikeAdded:
+async def post_score(
+        movie_id: str,
+        score: int = Query(default=0, ge=0, le=10),
+        user_id: str = Depends(JWTBearer()),
+        service: LikesHandler = Depends(get_db)
+) -> LikeAdded:
     """Add like to movie"""
     logger.info(f"endpoint post score: movie_id {movie_id}, "
                 f"user_id {user_id}, score {score}")
@@ -24,9 +26,11 @@ async def post_score(movie_id: str,
 
 @router.delete('/', description="Delete score",
                response_description="Score deleted")
-async def delete_score(movie_id: str,
-                       user_id: str = Depends(JWTBearer()),
-                       service: LikesHandler = Depends(get_db)) -> LikeDeleted:
+async def delete_score(
+        movie_id: str,
+        user_id: str = Depends(JWTBearer()),
+        service: LikesHandler = Depends(get_db)
+) -> LikeDeleted:
     """Delete movie's score"""
     logger.info(f"endpoint delete score: movie_id {movie_id}, "
                 f"user_id {user_id}")
@@ -36,10 +40,12 @@ async def delete_score(movie_id: str,
 
 @router.put('/', description="Changing movie's score",
             response_description="Movie's score was updated")
-async def change_score(movie_id: str,
-                       user_id: str = Depends(JWTBearer()),
-                       score: int = Query(default=0, ge=0, le=10),
-                       service: LikesHandler = Depends(get_db)) -> LikeUpdated:
+async def change_score(
+        movie_id: str,
+        user_id: str = Depends(JWTBearer()),
+        score: int = Query(default=0, ge=0, le=10),
+        service: LikesHandler = Depends(get_db)
+) -> LikeUpdated:
     """Changes movie's score"""
     logger.info(f"endpoint change score: movie_id {movie_id}, "
                 f"user_id {user_id}, score {score}")
@@ -50,9 +56,11 @@ async def change_score(movie_id: str,
 
 @router.get('/', description="Shows movie's rating",
             response_description="Movie's rating")
-async def movies_rating(movie_id: str,
-                        user_id: str = Depends(JWTBearer()),
-                        service: LikesHandler = Depends(get_db)) -> MovieRating:
+async def movies_rating(
+        movie_id: str,
+        user_id: str = Depends(JWTBearer()),
+        service: LikesHandler = Depends(get_db)
+) -> MovieRating:
     """Get movie's rating"""
     logger.info(f"endpoint get rating: movie_id {movie_id}, "
                 f"user_id {user_id}")

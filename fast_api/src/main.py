@@ -15,13 +15,10 @@ from core.config import settings
 from db import mongo_db
 from services.jwt_check import JWTBearer
 
-sentry_sdk.init(
-    dsn="https://bdac46e09f9444d1a209a8e570f92255@o1386750.ingest.sentry.io/6707192",
-
-    # Set traces_sample_rate to 1.0 to capture 100%
-    # of transactions for performance monitoring.
-    # We recommend adjusting this value in production,
-    traces_sample_rate=1.0,
+if settings.sentry:
+    sentry_sdk.init(
+        dsn=settings.sentry_ssettings.sentry_dsn,
+        traces_sample_rate=settings.sentry_ssettings.sentry_dsn,
 )
 
 app = FastAPI(
@@ -74,15 +71,20 @@ async def before_request(request: Request, call_next):  # type: ignore
     return await call_next(request)
 
 
-app.include_router(bookmarks.router, prefix='/api/v1/bookmarks',
-                   tags=['bookmarks'], dependencies=PROTECTED,
-                   )
-app.include_router(likes.router, prefix='/api/v1/likes',
-                   tags=['likes'], dependencies=PROTECTED,
-                   )
-app.include_router(critique.router, prefix='/api/v1/critique',
-                   tags=['critique'], dependencies=PROTECTED,
-                   )
+app.include_router(
+    bookmarks.router, prefix='/api/v1/bookmarks',
+    tags=['bookmarks'], dependencies=PROTECTED,
+)
+
+app.include_router(
+    likes.router, prefix='/api/v1/likes',
+    tags=['likes'], dependencies=PROTECTED,
+)
+
+app.include_router(
+    critique.router, prefix='/api/v1/critique',
+    tags=['critique'], dependencies=PROTECTED,
+)
 
 if __name__ == '__main__':
     uvicorn.run(

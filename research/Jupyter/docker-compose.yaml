@@ -1,0 +1,13 @@
+version: '3'
+
+services:
+  python:
+    build: ./
+    ports:
+      - '8888:8888'
+    volumes:
+      - ./data:/data
+
+networks:
+    default:
+     name: ugc_network

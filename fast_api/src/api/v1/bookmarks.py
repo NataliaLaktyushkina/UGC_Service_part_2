@@ -9,9 +9,11 @@ router = APIRouter()
 
 @router.post('/', description="Add bookmark",
              response_description="Movie bookmarked")
-async def post_bookmark(movie_id: str,
-                        user_id: str = Depends(JWTBearer()),
-                        service: BookmarkHandler = Depends(get_db)) -> BookmarkAdded:
+async def post_bookmark(
+        movie_id: str,
+        user_id: str = Depends(JWTBearer()),
+        service: BookmarkHandler = Depends(get_db)
+) -> BookmarkAdded:
     """Add movie to bookmarks"""
     logger.info(f"endpoint add bookmark: movie_id {movie_id}, user_id {user_id}")
     return await service.add_bookmark(movie_id=movie_id,
@@ -21,9 +23,11 @@ async def post_bookmark(movie_id: str,
 # deleting a movie from bookmarks
 @router.delete('/', description="Delete bookmark",
                response_description="Bookmark removed")
-async def delete_bookmark(movie_id: str,
-                          user_id: str = Depends(JWTBearer()),
-                          service: BookmarkHandler = Depends(get_db)) -> BookmarkDeleted:
+async def delete_bookmark(
+        movie_id: str,
+        user_id: str = Depends(JWTBearer()),
+        service: BookmarkHandler = Depends(get_db)
+) -> BookmarkDeleted:
     """Delete user's bookmark"""
     logger.info(f"endpoint delete bookmark: movie_id {movie_id}, user_id {user_id}")
     return await service.delete_bookmark(movie_id=movie_id,
@@ -34,6 +38,7 @@ async def delete_bookmark(movie_id: str,
 @router.get('/', description="Show the bookmark list")
 async def get_bookmark(
         user_id: str = Depends(JWTBearer()),
-        service: BookmarkHandler = Depends(get_db)) -> BookmarksList:
+        service: BookmarkHandler = Depends(get_db)
+) -> BookmarksList:
     logger.info(f"endpoint get bookmark: user_id {user_id}")
     return await service.get_bookmarks(user_id=user_id)
